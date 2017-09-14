@@ -40,11 +40,11 @@ def test_builddataframe():
     print(data)
 
 class perform:
-    def set_Symbols(self,Symbols):
-        self._Symbols = Symbols
-    def get_Symbols(self):
-        return self._Symbols
-    Symbols = property(get_Symbols, set_Symbols)
+    def set_SymbolsList(self,SymbolsList):
+        self._SymbolsList = SymbolsList
+    def get_SymbolsList(self):
+        return self._SymbolsList
+    SymbolsList = property(get_SymbolsList, set_SymbolsList)
 
     def set_StartDateString(self,StartDateString):
         self._StartDateString = StartDateString
@@ -70,6 +70,12 @@ class perform:
         return self._ReturnsDataframe
     ReturnsDataframe = property(get_ReturnsDataframe, set_ReturnsDataframe)
 
+    def set_ReturnsDataframeTimes100(self,ReturnsDataframeTimes100):
+        self._ReturnsDataframeTimes100 = ReturnsDataframeTimes100
+    def get_ReturnsDataframeTimes100(self):
+        return self._ReturnsDataframeTimes100
+    ReturnsDataframeTimes100 = property(get_ReturnsDataframeTimes100, set_ReturnsDataframeTimes100)
+    
     def set_AnnualizedReturnsDataframe(self,AnnualizedReturnsDataframe):
         self._AnnualizedReturnsDataframe = AnnualizedReturnsDataframe
     def get_AnnualizedReturnsDataframe(self):
@@ -84,7 +90,7 @@ class perform:
         
         print('Initialized class pullreturns.perform')
         
-        self.Symbols = symbols
+        self.SymbolsList = symbols
         self.StartDateString = startdate
         self.EndDateString = enddate
         
@@ -96,21 +102,21 @@ class perform:
         df_good,df_missing = pp1.stockhistoryasdataframe(symbols,startdate,enddate)
         list_of_good_symbols = np.unique(df_good[['Ticker']])
         print 'list_of_good_symbols', list_of_good_symbols
-        self.Symbols = list_of_good_symbols
+        self.SymbolsList = list_of_good_symbols
         df_pivot = df_good.pivot(index='Date', columns='Ticker', values='Adj Close')
         #print df_pivot
         self.StockHistoryDataframe = df_pivot
         #import pullpricesusingpandas as pp
         #self.StockHistoryDataframe = pp.stockhistory(symbols,startdate,enddate)
-        self.ReturnsDataframe = self.dailyreturns()
-        self.AnnualizedReturnsDataframe = self.annualizedreturns
+        self.ReturnsDataframe,self.ReturnsDataframeTimes100 = self.dailyreturns()
+        self.AnnualizedReturnsDataframe = self.annualizedreturns()
                                           
 
 
 
     def dailyreturns(self,):
 
-        symbols = self.Symbols 
+        symbols = self.SymbolsList 
         import datetime
         today_date = datetime.date.today()
         #import pullpricesusingpandas as pp
@@ -124,8 +130,9 @@ class perform:
         prev_value = float('Nan')
         
         rows_dailyreturns = []        
-
+        rows_dailyreturnstimes100 = []
         rows_dailyreturns.append(['prev_date','curr_date','ticker','prev_value','curr_value','change_pct'])
+        rows_dailyreturnstimes100.append(['prev_date','curr_date','ticker','prev_value','curr_value','change_pct'])
         
         d_of_prevs = {}
         prevclose = []
@@ -147,7 +154,8 @@ class perform:
                                 else:
                                     change_pct =  float('NaN')
                                 #print str(d),str(curr_date), s, prev_value, curr_value, change_pct
-                                rows_dailyreturns.append([str(d),str(curr_date), t, prev_value, curr_value, change_pct * 100.0])
+                                rows_dailyreturns.append([str(d),str(curr_date), t, prev_value, curr_value, change_pct])
+                                rows_dailyreturnstimes100.append([str(d),str(curr_date), t, prev_value, curr_value, change_pct * 100.0])
 
                 
                 for s in symbols:
@@ -158,8 +166,11 @@ class perform:
                         d_of_prevs[s] = [s,myobj[s],curr_date]
         headers = rows_dailyreturns.pop(0)
         df_dailyreturns = pd.DataFrame(rows_dailyreturns, columns = headers)
+
+        headers = rows_dailyreturnstimes100.pop(0)
+        df_dailyreturnstimes100 = pd.DataFrame(rows_dailyreturnstimes100, columns = headers)
         
-        return df_dailyreturns
+        return df_dailyreturns,df_dailyreturnstimes100
 
 
     def annualizedreturns(self):
@@ -175,7 +186,7 @@ class perform:
     def _annualizeddailyreturns(self,):
         ls_final = []
         ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','last_adjprice','last_adjprice'])
-        for s in self.Symbols:
+        for s in self.SymbolsList:
             print 'Doing annualized return for',s
             dfr = self.ReturnsDataframe.copy()
             df_dailyreturns = dfr[(dfr.ticker == s)]
@@ -262,34 +273,39 @@ class perform:
     
 if __name__=='__main__':
     #symbols = ['FB', 'MSFT', 'SPY', 'IBM', 'T', 'AMD','INTC','ACN', 'VZ', 'ORCL','DIS','BA','AMGN','MCD','CELG','LLY','COST','BIIB','MDLZ','TJX']
-    #symbols = ['AAPL', 'MSFT', 'SPY', 'IBM']
-    symbols = ['GOOGL',
-                            'FB',
-                            'MSFT',
-                            'LRCX',
-                            'EVR',
-                            'MASI',
-                            'CELG',
-                            'AOS',
-                            'LPX',
-                            'MRK',
-                            'EVR',
-                            'JNJ',
-                            'INTC',
-                            'GOLD',
-                            'LMT',
-                            'RTN',
-                            'BP',
-                            'T',
-                            'HSBC',
-                            'THO'
-                            ]
+    symbols = ['FB', 'MSFT', 'SPY', 'IBM']
+##    symbols = ['GOOGL',
+##                            'FB',
+##                            'MSFT',
+##                            'LRCX',
+##                            'EVR',
+##                            'MASI',
+##                            'CELG',
+##                            'AOS',
+##                            'LPX',
+##                            'MRK',
+##                            'EVR',
+##                            'JNJ',
+##                            'INTC',
+##                            'GOLD',
+##                            'LMT',
+##                            'RTN',
+##                            'BP',
+##                            'T',
+##                            'HSBC',
+##                            'THO'
+##                            ]
     startdate = '2016-06-30'
     enddate = '2017-06-30'
     o = perform(symbols,startdate,enddate)
 ##    print '------ Stock History Dataframe ------'
 ##    print o.StockHistoryDataframe
-##    print '------ Daily Returns Dataframe ------'
-##    print o.ReturnsDataframe
-##    print '------ Annualized Returns ------'
-##    print o.AnnualizedReturnsDataframe()
+    #print '------ Daily Returns Dataframe ------'
+    #print o.ReturnsDataframe
+
+    print '------ Daily Returns Times 100 Dataframe ------'
+    print o.ReturnsDataframeTimes100
+
+    print '------ Annualized Returns ------'
+    print o.AnnualizedReturnsDataframe
+

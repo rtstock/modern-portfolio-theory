@@ -47,6 +47,7 @@ def constrained_sum_sample_nonneg(n, total):
 
     return [x - 1 for x in constrained_sum_sample_pos(n, total + n)]
 
+
 import operator
 def sumproduct(*lists):
     return sum(reduce(operator.mul, data) for data in zip(*lists))
@@ -63,23 +64,29 @@ class perform:
         return self._ReturnsClass
     ReturnsClass = property(get_ReturnsClass, set_ReturnsClass)
 
-#    def setCovarianceMatrix(self,CovarianceMatrix):
-#        self.CovarianceMatrix = CovarianceMatrix
-#    def getCovarianceMatrix(self):
-#        return self._CovarianceMatrix
-#    CovarianceMatrix = property(getCovarianceMatrix, setCovarianceMatrix)
-#
-#    def setCorrelationMatrix(self,CorrelationMatrix):
-#        self.CorrelationMatrix = CorrelationMatrix
-#    def getCorrelationMatrix(self):
-#        return self._CorrelationMatrix
-#    CorrelationMatrix = property(getCorrelationMatrix, setCorrelationMatrix)
+    def setCovarianceMatrix(self,CovarianceMatrix):
+        self.CovarianceMatrix = CovarianceMatrix
+    def getCovarianceMatrix(self):
+        return self._CovarianceMatrix
+    CovarianceMatrix = property(getCovarianceMatrix, setCovarianceMatrix)
 
-#    def set_AnnualizedReturnsSeries(self,AnnualizedReturnsSeries):
-#        self._AnnualizedReturnsSeries = AnnualizedReturnsSeries
-#    def get_AnnualizedReturnsSeries(self):
-#        return self._AnnualizedReturnsSeries
-#    AnnualizedReturnsSeries = property(get_AnnualizedReturnsSeries, set_AnnualizedReturnsSeries)
+    def setCorrelationMatrix(self,CorrelationMatrix):
+        self.CorrelationMatrix = CorrelationMatrix
+    def getCorrelationMatrix(self):
+        return self._CorrelationMatrix
+    CorrelationMatrix = property(getCorrelationMatrix, setCorrelationMatrix)
+
+    def setPermutationsDataframe(self,PermutationsDataframe):
+        self.PermutationsDataframe = PermutationsDataframe
+    def getPermutationsDataframe(self):
+        return self._PermutationsDataframe
+    PermutationsDataframe = property(getPermutationsDataframe, setPermutationsDataframe)
+
+    def set_AnnualizedReturnsDataframe(self,AnnualizedReturnsDataframe):
+        self._AnnualizedReturnsDataframe = AnnualizedReturnsDataframe
+    def get_AnnualizedReturnsDataframe(self):
+        return self._AnnualizedReturnsDataframe
+    AnnualizedReturnsDataframe = property(get_AnnualizedReturnsDataframe, set_AnnualizedReturnsDataframe)
 
     def set_SymbolsList(self,SymbolsList):
         self._SymbolsList = SymbolsList
@@ -124,11 +131,23 @@ class perform:
         return self._EndDateString
     EndDateString = property(get_EndDateString, set_EndDateString)
 
+    #AnnualizedOrCumulative
+    def set_AnnualizedOrCumulative(self,AnnualizedOrCumulative):
+        self._AnnualizedOrCumulative = AnnualizedOrCumulative
+    def get_AnnualizedOrCumulative(self):
+        return self._AnnualizedOrCumulative
+    AnnualizedOrCumulative = property(get_AnnualizedOrCumulative, set_AnnualizedOrCumulative)
+
+
     def __init__(self,
                      symbols = ['AAPL','MSFT'] 
-                     ,  startdate = '2012-01-01'
+                     ,  startdate = '2017-01-01'
                      ,  enddate ='' #2014-01-01
-                     ,  showresults = 0):
+                     ,  permutations = 10
+                     ,  annualized_or_cumulative = 'annualized'
+                     ,  showresults = 0
+                 ):
+        
         print('Initialized class efficientfrontier')
         #from random import shuffle
         #shuffle(symbols_list)
@@ -136,6 +155,7 @@ class perform:
         print 'Doing efficient frontier for',self.SymbolsList
         self.StartDateString = startdate
         self.EndDateString = enddate
+        self.AnnualizedOrCumulative = annualized_or_cumulative
         self._compilehistoricaldataframes()
         #print oReturns.AnnualizedReturnsDataframe()
         #self.ReturnsClass = oReturns
@@ -150,6 +170,66 @@ class perform:
         
         #self.build(list_of_symbols,showresults)
     
+
+
+        #-------------------------------------------------------------------    
+        import numpy
+        import config
+        import mytools
+        import datetime
+        import os
+        mycachefolder = config.mycachefolder
+        mytools.general().make_sure_path_exists(mycachefolder)    
+        date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+
+        print 'covariancematrix'
+        cov = self.CovarianceMatrix
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' covariance.csv')
+        cov.to_csv(cachedfilepathname,columns=(list(cov.columns.values)))
+        
+        print 'correlationmatrix'
+        cor = self.CorrelationMatrix
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' correlation.csv')
+        cor.to_csv(cachedfilepathname,columns=(list(cor.columns.values)))
+
+        print 'prices'
+        prc = self.AlignedPriceHistoryDataframe
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' prices.csv')
+        prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
+        #print prc
+
+        print 'returns'
+        ret = self.AlignedReturnsDataframe
+        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' returns.csv')
+        ret.to_csv(cachedfilepathname,columns=(list(ret.columns.values)))
+
+        print 'length of prc', len(prc)
+
+        #print '---- AnnualizedReturnDataframe-----'
+        #print self.ReturnsClass.AnnualizedReturnsDataframe
+
+        df_perms = self.permutationstodataframe(permutations)
+        self.PermutationsDataframe = df_perms
+#        print df_perms
+##        for index, row in df_perms.iterrows():
+##            print '-----'
+##            print index,row
+##            print '-----'
+##            print 'random weights:'
+##            randomweightseries = row['value']['randomweightseries']
+##            #print index,randomweightseries
+##            for idx in randomweightseries.iteritems():
+##                print '  ',idx[0],idx[1]
+##            
+##            print 'portfolioreturn=',row['value']['portfolioreturn']
+##            print 'portfoliostandarddeviation=',row['value']['portfoliostandarddeviation'] 
+        #-------------------------------------------------------------------
+
 
 
     def _compilehistoricaldataframes(self
@@ -173,13 +253,13 @@ class perform:
                         , startdate = self.StartDateString
                         , enddate = self.EndDateString
                     )
-        print 'ok got here'
+        #print 'ok got here'
         df_alignedpricehistory = o.StockHistoryDataframe
-        print df_alignedpricehistory
+        #print df_alignedpricehistory
         df_returns = o.ReturnsDataframe
-        print df_returns
+        #print df_returns
         df_annualizedreturns = o.AnnualizedReturnsDataframe
-        print df_annualizedreturns
+        #print df_annualizedreturns
         
         #print df_prices
         #stop
@@ -206,6 +286,7 @@ class perform:
         
         
 
+
         index = ['X']
         columns = ['A','B','C']
         
@@ -226,7 +307,7 @@ class perform:
              
         for k,v in dict_of_df_returns.items():
             if not k == keyoflargestreturnsdf:
-                df_new = v[['change_pct']]
+                df_new = v[['change_pct']] #ttttttt
                 #print df_new
                 df_new.columns = [k]
                 #print df_new
@@ -242,6 +323,8 @@ class perform:
         self.ReturnsClass = o
         self.AlignedReturnsDataframe = df_alignedreturns
         self.AlignedPriceHistoryDataframe = df_alignedpricehistory
+        self.AnnualizedReturnsDataframe = o.AnnualizedReturnsDataframe
+        self.SymbolsList = o.SymbolsList
 ##        # ----------------------------------------------------------------------
 ##        df_largestofpricehistory = pd.DataFrame(index=index, columns=columns)
 ##        df_largestofpricehistory = df_largestofpricehistory.fillna(0) # with 0s rather than NaNs
@@ -365,7 +448,7 @@ class perform:
 
         #int_list = constrained_sum_sample_pos(len(self.SymbolsList),100) 
         #print 'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww'
-        int_list = constrained_sum_sample_nonneg(len(self.SymbolsList),100) 
+        int_list = constrained_sum_sample_pos(len(self.SymbolsList),100) 
         
         fractions_list = [float(x)/float(100) for x in int_list]
         #sums them all to test
@@ -375,10 +458,10 @@ class perform:
         return fractions_series
 
 #    def portfolioreturnrandomweights(self,):
-#        return sumproduct(self.randomweightseries(),self.AnnualizedReturnsSeries)
+#        return sumproduct(self.randomweightseries(),self.AnnualizedReturnsDataframe)
 #
 #    def portfolioreturnequalweights(self,):
-#        return sumproduct(self.equalweightseries(),self.AnnualizedReturnsSeries)
+#        return sumproduct(self.equalweightseries(),self.AnnualizedReturnsDataframe)
 
 #    def portfoliostandarddeviationrandomweights(self,):
 #        #df = pd.DataFrame({'a' : [4,1,3], 'b' : [5,2,4]},index=[1,2,3])
@@ -399,14 +482,26 @@ class perform:
 #        s2 = s1.dot(s.T)
 #        return s2
 
-    def portfolioriskreturnrandomweight(self,):
+    def portfolioriskreturnrandomweight(self,oftype='random'):  #uuuuuuu
         #df = pd.DataFrame({'a' : [4,1,3], 'b' : [5,2,4]},index=[1,2,3])
 
         #s = pd.Series([0.6,0.4],index=['a','b'])
-        #print 'pppppppppppppppppppppppppppppppppppppppppppp'
-        rws = self.randomweightseries()
-        #print self.AnnualizedReturnsSeries
-        portfolioreturn = sumproduct(rws,self.AnnualizedReturnsSeries)
+        if oftype == 'equal':
+            rws = self.equalweightseries()
+        else:
+            rws = self.randomweightseries()
+        #print 'randomweightseries'
+        #print rws
+        #print self.AnnualizedReturnsDataframe
+        if self.AnnualizedOrCumulative == 'cumulative':
+            annualizedreturn_list = self.AnnualizedReturnsDataframe['cumulative_return'].tolist()
+        else:
+            annualizedreturn_list = self.AnnualizedReturnsDataframe['annualized_return'].tolist()
+        #print 'annualizedreturn_list'
+        #print annualizedreturn_list
+        portfolioreturn = sumproduct(rws,annualizedreturn_list)
+        #print 'portfolioreturn'
+        #print portfolioreturn
         df = self.covariancematrix()
         s1 = df.dot(rws)
         portfoliovariance = s1.dot(rws.T)
@@ -415,6 +510,8 @@ class perform:
         index = ['randomweightseries','portfolioreturn','portfoliostandarddeviation']
         returnseries = pd.Series(data, index=index)
         #print 'returnseries',data
+        #print 'portfolioriskreturnrandomweight'
+        #print returnseries
         return returnseries
 
 #    def testpermutations(self,howmany):    
@@ -436,11 +533,11 @@ class perform:
 #        print '---------------------------------------'
 #        print 'permutations '
 #        print '---------------------------------------'
-        dict_permutations = {}
+        dict_permutations = {}        
         for i in range(howmany):
             #print 'qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'
             #print self.portfolioriskreturnrandomweight
-            permutation_series = self.portfolioriskreturnrandomweight()
+            permutation_series = self.portfolioriskreturnrandomweight(oftype='random')
             #for idx in permutation_series['randomweightseries'].iteritems():
             #    print idx
             #randomweightseries = permutation_series['randomweightseries']
@@ -449,6 +546,9 @@ class perform:
             #portfoliostandarddeviation = permutation_series['portfoliostandarddeviation']
             #print i,portfolioreturn,portfoliostandarddeviation 
             dict_permutations[len(dict_permutations)] = permutation_series #randomweightseries,portfolioreturn,portfoliostandarddeviation
+        #Add equal weight series to end
+        permutation_series = self.portfolioriskreturnrandomweight(oftype='equal')
+        dict_permutations[len(dict_permutations)] = permutation_series 
         df = pd.DataFrame(dict_permutations.items(), columns=['key','value']) # 'portfolioreturn','portfoliostandarddeviation','weight'
         df = df.set_index('key',drop=True)
         #df = df['value']
@@ -495,69 +595,25 @@ if __name__=='__main__':
                             ]
                 ,  startdate = '2017-02-25'
                 ,  enddate = '2017-09-30'
+                ,  permutations = 11
+                ,  annualized_or_cumulative = 'cumulative'
                 ) 
-    # '^GSPC','^OEX','^MID','^RUT','^DJI'
-    #print 'ReturnsDataframe'
-    #print o.ReturnsDataframe
-#    print o.PriceHistoryDataframe
-    
-    import numpy
-    import config
-    import mytools
-    import datetime
-    import os
-    mycachefolder = config.mycachefolder
-    mytools.general().make_sure_path_exists(mycachefolder)    
-    date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
 
-    print 'covariancematrix'
-    cov = o.covariancematrix()    
-    cachedfilepathname = mycachefolder
-    cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' covariance.csv')
-    cov.to_csv(cachedfilepathname,columns=(list(cov.columns.values)))
-    
-    print 'correlationmatrix'
-    cor = o.correlationmatrix()
-    cachedfilepathname = mycachefolder
-    cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' correlation.csv')
-    cor.to_csv(cachedfilepathname,columns=(list(cor.columns.values)))
-
-    print 'prices'
-    prc = o.ReturnsClass.StockHistoryDataframe
-    cachedfilepathname = mycachefolder
-    cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' prices.csv')
-    prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
-    #print prc
-
-    print 'returns'
-    ret = o.ReturnsClass.ReturnsDataframe
-    cachedfilepathname = mycachefolder
-    cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' returns.csv')
-    ret.to_csv(cachedfilepathname,columns=(list(ret.columns.values)))
-
-    print 'length of prc', len(prc)
-
-#    print '---- Annualized Return Series-----'
-#    print o.AnnualizedReturnsSeries
-#    print '---- Annualized Return Series Indexes-----'
-#    print list(o.AnnualizedReturnsSeries.index)
-    #    for s in o.AnnualizedReturnsSeries:
-#        print s
-'''    
-    df = o.permutationstodataframe(10)
-    print df
-    for index, row in df.iterrows():
+    df_perms = o.PermutationsDataframe
+    print df_perms
+    for index, row in df_perms.iterrows():
         print '-----'
-        print index,row
-        print '-----'
-        print 'random weights:'
+        print 'permutaton:',index
+        print 'weights tested:'
         randomweightseries = row['value']['randomweightseries']
         #print index,randomweightseries
         for idx in randomweightseries.iteritems():
             print '  ',idx[0],idx[1]
-        
         print 'portfolioreturn=',row['value']['portfolioreturn']
-        print 'portfoliostandarddeviation=',row['value']['portfoliostandarddeviation'] 
-'''
+        print 'portfoliostandarddeviation=', row['value']['portfoliostandarddeviation'] 
+            
+        #-------------------------------------------------------------------
+
+
      
   

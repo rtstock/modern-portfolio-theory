@@ -14,11 +14,11 @@ Created on Wed Jul 29 17:18:11 2015
 
 class output:
 
-    def set_PermutationsDataframe(self,PermutationsDataframe):
-        self._PermutationsDataframe = PermutationsDataframe
-    def get_PermutationsDataframe(self):
-        return self._PermutationsDataframe
-    PermutationsDataframe = property(get_PermutationsDataframe, set_PermutationsDataframe)
+    def set_RiskOverReturnDataframe(self,RiskOverReturnDataframe):
+        self._RiskOverReturnDataframe = RiskOverReturnDataframe
+    def get_RiskOverReturnDataframe(self):
+        return self._RiskOverReturnDataframe
+    RiskOverReturnDataframe = property(get_RiskOverReturnDataframe, set_RiskOverReturnDataframe)
 
     def set_EfficientFrontierObject(self,EfficientFrontierObject):
         self._EfficientFrontierObject = EfficientFrontierObject
@@ -31,36 +31,61 @@ class output:
   
     
     def __init__(self,
-                     list_of_symbols 
-                     ,  startdate_string = '2005-01-01'
-                     ,  enddate_string = ''#'2013-12-31'
-                     ,  period = 'monthly'
-                     ,  pctchangeorlogreturn = 'pctchange'
+                     symbols 
+                     ,  startdate = '2005-01-01'
+                     ,  enddate = ''#'2013-12-31'
+                     ,  permutations = 10
+                     ,  annualized_or_cumulative = 'cumulative'
                      ):
                          
-        self._setup(list_of_symbols 
-                     ,  startdate_string
-                     ,  enddate_string 
-                     ,  period
-                     ,  pctchangeorlogreturn
-                     )
-
-    def _setup(self,list_of_symbols 
-                     ,  startdate_string
-                     ,  enddate_string 
-                     ,  period
-                     ,  pctchangeorlogreturn
-                     ):
         print('Initialized class outputefficientfrontier')
         import efficientfrontier as ef   
         
-        o = ef.perform(list_of_symbols,startdate_string,enddate_string,period,pctchangeorlogreturn) # '^GSPC','^OEX','^MID','^RUT','^DJI'
+        o = ef.perform(symbols,startdate,enddate,permutations,annualized_or_cumulative) # '^GSPC','^OEX','^MID','^RUT','^DJI'
         
         self.EfficientFrontierObject = o
-        
-    def permutationstodataframe(self,iterations):
+#--------------------------------------------------------
+        import config
+        import mytools
+        import datetime
+        import os
+        mycachefolder = config.mycachefolder
+        df_perms = self.EfficientFrontierObject.PermutationsDataframe
+
+        list_of_dicts = []
+        for index, row in df_perms.iterrows():
+            #print '-----'
+            #print 'permutaton:',index
+            #print 'weights tested:'
+            randomweightseries = row['value']['randomweightseries']
+            #print index,randomweightseries
+            dict_rows = {}
+            for idx in randomweightseries.iteritems():
+                dict_rows[str(idx[0])] = str(idx[1])
+            dict_rows['portfolioreturn'] = row['value']['portfolioreturn']
+            #print 'portfolioreturn=',row['value']['portfolioreturn']
+            dict_rows['portfoliostandarddeviation'] = row['value']['portfoliostandarddeviation'] 
+            #print 'portfoliostandarddeviation=', row['value']['portfoliostandarddeviation'] 
+            list_of_dicts.append(dict_rows)
+
         import pandas as pd
-        df_permutations = self.EfficientFrontierObject.permutationstodataframe(iterations)
+        df_final = pd.DataFrame(list_of_dicts)
+        
+        mytools.general().make_sure_path_exists(mycachefolder)    
+        date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' permutations.csv')
+
+        df_final['returnoverrisk'] = df_final.portfolioreturn / df_final.portfoliostandarddeviation
+        df_final.to_csv(cachedfilepathname,columns=(list(df_final.columns.values)))
+        print 'find your permutations output here:',cachedfilepathname
+
+        print self.drawsail(permutations,0.90)
+
+#--------------------------------------------------------
+    def riskoverreturntodataframe(self,iterations):
+        import pandas as pd
+        df_permutations = self.EfficientFrontierObject.PermutationsDataframe
         mydf = pd.DataFrame(columns=('portfolioreturn', 'portfoliostandarddeviation','weightstring'))
         
         #Do map here to make quicker
@@ -74,11 +99,11 @@ class output:
             portfoliostandarddeviation = row['value']['portfoliostandarddeviation'] 
             mydf.loc[index] = [portfolioreturn,portfoliostandarddeviation,weightstring]
         mydf['returnoverrisk'] = mydf.portfolioreturn / mydf.portfoliostandarddeviation
-        self.PermutationsDataframe = mydf
+        self.RiskOverReturnDataframe = mydf
         return mydf
 
     def drawsail(self,numberofpermutations = 1000,optimalpctasdecimal = 0.90):
-        df = self.permutationstodataframe(numberofpermutations)
+        df = self.riskoverreturntodataframe(numberofpermutations)
         #df['returnoverrisk'] = df.portfolioreturn / df.portfoliostandarddeviation
         maxreturnoverriskseries = df.ix[df['returnoverrisk'].idxmax()]
         df['maxreturnoverrisk'] = maxreturnoverriskseries['returnoverrisk']
@@ -137,23 +162,74 @@ class output:
 if __name__=='__main__':
 
     mysymbols = ['AAPL','MSFT','XOM','JNJ','GE']
-    o = output(      list_of_symbols = mysymbols
-                     ,  startdate_string = '2006-12-31'
-                     ,  enddate_string = '2016-07-29'
-                     ,  period = 'daily'
-                     ,  pctchangeorlogreturn = 'pctchange'
+    o = output(
+                #symbols = ['GOOGL','APPL','MSFT','LRCX','EVR','MASI','CELG','AOS','LPX','MRK','EVR','JNJ','INTC','GOLD','LMT','RTN','BP','T','HSBC','THO']
+                #symbols = ['CSCO','AAPL', 'MSFT', 'SPY']
+                symbols = ['GOOGL',
+                            'FB',
+                            'MSFT',
+                            'LRCX',
+                            'EVR',
+                            'MASI',
+                            'CELG',
+                            'AOS',
+                            'LPX',
+                            'MRK',
+                            'EVR',
+                            'JNJ',
+                            'INTC',
+                            #'GOLD',
+                            'LMT',
+                            'RTN',
+                            'BP',
+                            'T',
+                            'HSBC',
+                            'THO',
+                            'SPY'
+                            ]
+                ,  startdate = '2017-02-25'
+                ,  enddate = '2017-09-30'
+                ,  permutations = 5000
+                ,  annualized_or_cumulative = 'annualized'
               )
-    #   
-    # 'LNG','AGN','LVNTA','SPR','ALLE','VALE','P','JD','ALNY','CDK','FB','DAL','DOOR','ICPT','ABUS','AXON' 
 
-
-    # 'WMT','NKE','T','MCD','JPM','^RUT','XOM','MSFT','YHOO','QQQ','HD','GS','BAC','LEO'
-    # '^GSPC','^OEX','^MID','^RUT','^DJI','^IXIC','^GSPC','^DJI','^OEX','^RUT'
-    #'WMT','NKE','T','MCD','JPM','^RUT'
-    #'^GSPC','^OEX','^MID','^RUT','^DJI'
-    print o.EfficientFrontierObject.correlationmatrix()
-    print o.EfficientFrontierObject.covariancematrix
-    print o.EfficientFrontierObject.ReturnsDataframe
+    #print o.EfficientFrontierObject.CorrelationMatrix
+    #print o.EfficientFrontierObject.CovarianceMatrix
+    #print o.EfficientFrontierObject.AlignedReturnsDataframe
     #print ' ---- here is just one random weight Series... ----'
     #print o.EfficientFrontierObject.portfolioriskreturnrandomweight()
-    print o.drawsail(5000,0.90)
+##    import config
+##    import mytools
+##    import datetime
+##    import os
+##    mycachefolder = config.mycachefolder
+##    df_perms = o.EfficientFrontierObject.PermutationsDataframe
+##
+##    list_of_dicts = []
+##    for index, row in df_perms.iterrows():
+##        #print '-----'
+##        #print 'permutaton:',index
+##        #print 'weights tested:'
+##        randomweightseries = row['value']['randomweightseries']
+##        #print index,randomweightseries
+##        dict_rows = {}
+##        for idx in randomweightseries.iteritems():
+##            dict_rows[str(idx[0])] = str(idx[1])
+##        dict_rows['portfolioreturn'] = row['value']['portfolioreturn']
+##        #print 'portfolioreturn=',row['value']['portfolioreturn']
+##        dict_rows['portfoliostandarddeviation'] = row['value']['portfoliostandarddeviation'] 
+##        #print 'portfoliostandarddeviation=', row['value']['portfoliostandarddeviation'] 
+##        list_of_dicts.append(dict_rows)
+##        #-------------------------------------------------------------------
+##    import pandas as pd
+##    df_final = pd.DataFrame(list_of_dicts)
+##    
+##    mytools.general().make_sure_path_exists(mycachefolder)    
+##    date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+##    cachedfilepathname = mycachefolder
+##    cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' permutations.csv')
+##
+##    df_final['returnoverrisk'] = df_final.portfolioreturn / df_final.portfoliostandarddeviation
+##    df_final.to_csv(cachedfilepathname,columns=(list(df_final.columns.values)))
+##
+##    print o.drawsail(50,0.90)
