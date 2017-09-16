@@ -208,15 +208,7 @@ class perform:
         prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
         #print prc
 
-        print 'aggregatedreturns'
-        #ret = self.AlignedReturnsDataframe
-        agret = self.AggregatedReturnsDataframe
-        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
-        cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedreturns.csv')
-        agret.to_csv(cachedfilepathname,columns=(list(agret.columns.values)))
-
-        print 'dailyreturns'
+        print 'returns'
         #ret = self.AlignedReturnsDataframe
         ret = self.ReturnsClass.ReturnsDataframe
         #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
@@ -274,8 +266,8 @@ class perform:
         #print df_alignedpricehistory
         df_returns = o.ReturnsDataframe
         #print df_returns
-        df_aggregatedreturns = o.AggregatedReturnsDataframe
-        #print df_aggregatedreturns
+        df_annualizedreturns = o.AggregatedReturnsDataframe
+        #print df_annualizedreturns
         
         #print df_prices
         #stop
@@ -500,6 +492,7 @@ class perform:
 
     def portfolioriskreturnrandomweight(self,oftype='random'):  #uuuuuuu
         #df = pd.DataFrame({'a' : [4,1,3], 'b' : [5,2,4]},index=[1,2,3])
+
         #s = pd.Series([0.6,0.4],index=['a','b'])
         if oftype == 'equal':
             rws = self.equalweightseries()
@@ -509,12 +502,12 @@ class perform:
         #print rws
         #print self.AggregatedReturnsDataframe
         if self.AnnualizedOrCumulative == 'cumulative':
-            aggregatedreturn_list = self.AggregatedReturnsDataframe['cumulative_return'].tolist()
+            annualizedreturn_list = self.AggregatedReturnsDataframe['cumulative_return'].tolist()
         else:
-            aggregatedreturn_list = self.AggregatedReturnsDataframe['annualized_return'].tolist()
-        #print 'aggregatedreturn_list'
-        #print aggregatedreturn_list
-        portfolioreturn = sumproduct(rws,aggregatedreturn_list)
+            annualizedreturn_list = self.AggregatedReturnsDataframe['annualized_return'].tolist()
+        #print 'annualizedreturn_list'
+        #print annualizedreturn_list
+        portfolioreturn = sumproduct(rws,annualizedreturn_list)
         #print 'portfolioreturn'
         #print portfolioreturn
         df = self.covariancematrix()
@@ -612,23 +605,22 @@ if __name__=='__main__':
                 ,  enddate = '2017-09-30'
                 ,  permutations = 11
                 ,  annualized_or_cumulative = 'cumulative'
-                )
-    print o.AggregatedReturnsDataframe
-##    #-------------------------------------------------------------------
-##    df_perms = o.PermutationsDataframe
-##    print df_perms
-##    for index, row in df_perms.iterrows():
-##        print '-----'
-##        print 'permutaton:',index
-##        print 'weights tested:'
-##        randomweightseries = row['value']['randomweightseries']
-##        #print index,randomweightseries
-##        for idx in randomweightseries.iteritems():
-##            print '  ',idx[0],idx[1]
-##        print 'portfolioreturn=',row['value']['portfolioreturn']
-##        print 'portfoliostandarddeviation=', row['value']['portfoliostandarddeviation'] 
-##            
-##    #-------------------------------------------------------------------
+                ) 
+
+    df_perms = o.PermutationsDataframe
+    print df_perms
+    for index, row in df_perms.iterrows():
+        print '-----'
+        print 'permutaton:',index
+        print 'weights tested:'
+        randomweightseries = row['value']['randomweightseries']
+        #print index,randomweightseries
+        for idx in randomweightseries.iteritems():
+            print '  ',idx[0],idx[1]
+        print 'portfolioreturn=',row['value']['portfolioreturn']
+        print 'portfoliostandarddeviation=', row['value']['portfoliostandarddeviation'] 
+            
+        #-------------------------------------------------------------------
 
 
      

@@ -187,10 +187,10 @@ if __name__=='__main__':
                             'THO',
                             'SPY'
                             ]
-                ,  startdate = '2017-02-25'
+                ,  startdate = '2015-02-28'
                 ,  enddate = '2017-09-30'
                 ,  permutations = 5000
-                ,  annualized_or_cumulative = 'annualized'
+                ,  annualized_or_cumulative = 'cumulative'
               )
 
     #print o.EfficientFrontierObject.CorrelationMatrix

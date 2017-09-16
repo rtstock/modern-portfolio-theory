@@ -613,8 +613,10 @@ if __name__=='__main__':
                 ,  permutations = 11
                 ,  annualized_or_cumulative = 'cumulative'
                 )
+    
     print o.AggregatedReturnsDataframe
-##    #-------------------------------------------------------------------
+##
+    #-------------------------------------------------------------------
 ##    df_perms = o.PermutationsDataframe
 ##    print df_perms
 ##    for index, row in df_perms.iterrows():

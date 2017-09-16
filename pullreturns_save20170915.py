@@ -39,8 +39,6 @@ def test_builddataframe():
     data = df[not_dummies]
     print(data)
 
-
-
 class perform:
     def set_SymbolsList(self,SymbolsList):
         self._SymbolsList = SymbolsList
@@ -111,28 +109,10 @@ class perform:
         #import pullpricesusingpandas as pp
         #self.StockHistoryDataframe = pp.stockhistory(symbols,startdate,enddate)
         self.ReturnsDataframe,self.ReturnsDataframeTimes100 = self.dailyreturns()
-        self.AggregatedReturnsDataframe = self.aggregatedreturns()
+        self.AggregatedReturnsDataframe = self.annualizedreturns()
                                           
-##    def calc_beta_test02():
-##        df = self.AggregatedReturnsDataframe
-##        df['mean'] = df.mean(axis=1)
-##        np_array = df.values
-##        print np_array
-##        m = df['mean'] # market returns are column zero from numpy array
-##        for s in self.SymbolsList:        
-##            x = df[s] # stock returns are column one from numpy array
-##            covariance = np.cov(x,m) # Calculate covariance between stock and market
-##            beta = covariance[0,1]/covariance[1,1]
-##        return beta
-##
-##
-##    def calc_beta_test01(df):
-##        np_array = df.values
-##        m = np_array[:,0] # market returns are column zero from numpy array
-##        s = np_array[:,1] # stock returns are column one from numpy array
-##        covariance = np.cov(s,m) # Calculate covariance between stock and market
-##        beta = covariance[0,1]/covariance[1,1]
-##        return beta
+
+
 
     def dailyreturns(self,):
 
@@ -193,8 +173,8 @@ class perform:
         return df_dailyreturns,df_dailyreturnstimes100
 
 
-    def aggregatedreturns(self):
-        ar = self._aggregateddailyreturns()
+    def annualizedreturns(self):
+        ar = self._annualizeddailyreturns()
         
         #if uselogreturns == False:
         #    ar = self._annualizeddailyreturn()  
@@ -203,9 +183,9 @@ class perform:
         return ar
     
 
-    def _aggregateddailyreturns(self,):
+    def _annualizeddailyreturns(self,):
         ls_final = []
-        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','random_return','start_adjprice','end_adjprice'])
+        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','last_adjprice','last_adjprice'])
         for s in self.SymbolsList:
             print 'Doing annualized return for',s
             dfr = self.ReturnsDataframe.copy()
@@ -221,12 +201,12 @@ class perform:
             first_valid_index = df_dailyreturns.first_valid_index()
             #print 'first_valid_index', first_valid_index
             firstdate = df_dailyreturns.loc[first_valid_index]['curr_date']
-            start_adjprice = df_dailyreturns.loc[first_valid_index]['curr_value']
+            first_adjprice = df_dailyreturns.loc[first_valid_index]['curr_value']
             
             last_valid_index = df_dailyreturns.last_valid_index()
             #print 'last_valid_index',last_valid_index
             lastdate = df_dailyreturns.loc[last_valid_index]['curr_date']
-            end_adjprice = df_dailyreturns.loc[last_valid_index]['curr_value']
+            last_adjprice = df_dailyreturns.loc[last_valid_index]['curr_value']
             #df_dailyreturns.loc[df_dailyreturns.index,'change_pct']= df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'] + float(1.0)
             df_dailyreturns.loc[df_dailyreturns.index,'change_pct_unitized'] = df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'] + float(1.0)
             ls_dailyreturns = df_dailyreturns['change_pct_unitized'].values.tolist()
@@ -249,11 +229,7 @@ class perform:
             df_dailyreturns.loc[df_dailyreturns.index,'cumulative_return']  = (1 + df_dailyreturns.change_pct).cumprod() - 1
             #print df_dailyreturns
             cumr = df_dailyreturns.loc[last_valid_index]['cumulative_return']
-            import random
-            randret = random.randint(0, 200)  # 0 or 1(both incl.)
-            randr = adr * randret/100.0
-
-            ls_final.append([s,firstdate,lastdate,adr,cumr,randr,start_adjprice,end_adjprice])
+            ls_final.append([s,firstdate,lastdate,adr,cumr,first_adjprice,last_adjprice])
         headers = ls_final.pop(0)
         import pandas as pd
         df_final = pd.DataFrame(ls_final, columns = headers)
@@ -297,8 +273,7 @@ class perform:
     
 if __name__=='__main__':
     #symbols = ['FB', 'MSFT', 'SPY', 'IBM', 'T', 'AMD','INTC','ACN', 'VZ', 'ORCL','DIS','BA','AMGN','MCD','CELG','LLY','COST','BIIB','MDLZ','TJX']
-    symbols  = ['FB', 'MSFT', 'SPY', 'IBM']
-    forecast = ['.03', 'MSFT', 'SPY', 'IBM']
+    symbols = ['FB', 'MSFT', 'SPY', 'IBM']
 ##    symbols = ['GOOGL',
 ##                            'FB',
 ##                            'MSFT',
@@ -331,6 +306,6 @@ if __name__=='__main__':
     print '------ Daily Returns Times 100 Dataframe ------'
     print o.ReturnsDataframeTimes100
 
-    print '------ AggregatedReturnsDataframe Returns ------'
+    print '------ Annualized Returns ------'
     print o.AggregatedReturnsDataframe
 

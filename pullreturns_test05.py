@@ -205,7 +205,7 @@ class perform:
 
     def _aggregateddailyreturns(self,):
         ls_final = []
-        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','random_return','start_adjprice','end_adjprice'])
+        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','rand_return','start_adjprice','end_adjprice'])
         for s in self.SymbolsList:
             print 'Doing annualized return for',s
             dfr = self.ReturnsDataframe.copy()
