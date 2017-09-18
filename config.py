@@ -8,7 +8,7 @@ Created on Sat Jul 11 18:21:39 2015
 localoutputfolder = 'C:\Batches\AutomationProjects\Investment Strategy\ETL\Uploads\Ready'
 serverwatcherdestination = '\\\\ipc-vsql01\\DATA\\Batches\\prod\\WatchFolder\\incoming'
 
-mycachefolder = 'C:\\Batches\\GitStuff\\efficientfrontiermodel\\cache'
+mycachefolder = 'C:\\Batches\\GitStuff\\modern-portfolio-theory\\cache'
 
 #mysourcedatafolder = 'C:\\Batches\\rts\\output\\condor\\01 sourcedata'
 #mycandidatesfolder = 'C:\\Batches\\rts\\output\\condor\\02 candidates'

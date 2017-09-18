@@ -13,6 +13,12 @@ Created on Wed Jul 29 17:18:11 2015
 """
 
 class output:
+##    def set_Permutations(self,Permutations):
+##        self._Permutations = Permutations
+##    def get_Permutations(self):
+##        return self._Permutations
+##    Permutations = property(get_Permutations, set_Permutations)
+
 
     def set_RiskOverReturnDataframe(self,RiskOverReturnDataframe):
         self._RiskOverReturnDataframe = RiskOverReturnDataframe
@@ -42,8 +48,81 @@ class output:
         import efficientfrontier as ef   
         
         o = ef.perform(symbols,startdate,enddate,permutations,annualized_or_cumulative) # '^GSPC','^OEX','^MID','^RUT','^DJI'
-        
         self.EfficientFrontierObject = o
+        print 'Count of Permutations PLUS equal weighted',len(self.EfficientFrontierObject.PermutationsDataframe)
+        self.PrintOutput()
+        self.PrintSail()
+        
+    def PrintOutput(self,):
+        # Print Output -------------------------------------------------------------------    
+        import numpy
+        import config
+        import mytools
+        import datetime
+        import os
+        mycachefolder = config.mycachefolder
+        mytools.general().make_sure_path_exists(mycachefolder)    
+        date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+        
+        o = self.EfficientFrontierObject
+        print 'covariancematrix'
+        cov = o.CovarianceMatrix
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' covariance.csv')
+        cov.to_csv(cachedfilepathname,columns=(list(cov.columns.values)))
+        
+        print 'correlationmatrix'
+        cor = o.CorrelationMatrix
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' correlation.csv')
+        cor.to_csv(cachedfilepathname,columns=(list(cor.columns.values)))
+
+        print 'prices'
+        prc = o.AlignedPriceHistoryDataframe
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' prices.csv')
+        prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
+        #print prc
+
+        print 'aggregatedreturns'
+        #ret = o.AlignedReturnsDataframe
+        agret = o.AggregatedReturnsDataframe
+        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedreturns.csv')
+        agret.to_csv(cachedfilepathname,columns=(list(agret.columns.values)))
+
+        print 'dailyreturns'
+        #ret = o.AlignedReturnsDataframe
+        ret = o.ReturnsClass.ReturnsDataframe
+        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' returns.csv')
+        ret.to_csv(cachedfilepathname,columns=(list(ret.columns.values)))
+
+        print 'length of prc', len(prc)
+
+        #print '---- AnnualizedReturnDataframe-----'
+        #print o.ReturnsClass.AggregatedReturnsDataframe
+
+        #df_perms = o.permutationstodataframe(permutations)
+        #o.PermutationsDataframe = df_perms
+#        print df_perms
+##        for index, row in df_perms.iterrows():
+##            print '-----'
+##            print index,row
+##            print '-----'
+##            print 'random weights:'
+##            randomweightseries = row['value']['randomweightseries']
+##            #print index,randomweightseries
+##            for idx in randomweightseries.iteritems():
+##                print '  ',idx[0],idx[1]
+##            
+##            print 'portfolioreturn=',row['value']['portfolioreturn']
+##            print 'portfoliostandarddeviation=',row['value']['portfoliostandarddeviation'] 
+        #-------------------------------------------------------------------
+
+    def PrintSail(self,):
 #--------------------------------------------------------
         import config
         import mytools
@@ -70,18 +149,16 @@ class output:
 
         import pandas as pd
         df_final = pd.DataFrame(list_of_dicts)
-        
         mytools.general().make_sure_path_exists(mycachefolder)    
         date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' permutations.csv')
-
         df_final['returnoverrisk'] = df_final.portfolioreturn / df_final.portfoliostandarddeviation
         df_final.to_csv(cachedfilepathname,columns=(list(df_final.columns.values)))
         print 'find your permutations output here:',cachedfilepathname
 
-        print self.drawsail(permutations,0.90)
-
+        print self.drawsail(0.90)
+    
 #--------------------------------------------------------
     def riskoverreturntodataframe(self,iterations):
         import pandas as pd
@@ -102,7 +179,8 @@ class output:
         self.RiskOverReturnDataframe = mydf
         return mydf
 
-    def drawsail(self,numberofpermutations = 1000,optimalpctasdecimal = 0.90):
+    def drawsail(self,optimalpctasdecimal = 0.90):
+        numberofpermutations = len(self.EfficientFrontierObject.PermutationsDataframe)
         df = self.riskoverreturntodataframe(numberofpermutations)
         #df['returnoverrisk'] = df.portfolioreturn / df.portfoliostandarddeviation
         maxreturnoverriskseries = df.ix[df['returnoverrisk'].idxmax()]
@@ -187,9 +265,9 @@ if __name__=='__main__':
                             'THO',
                             'SPY'
                             ]
-                ,  startdate = '2015-02-28'
+                ,  startdate = '2017-02-28'
                 ,  enddate = '2017-09-30'
-                ,  permutations = 5000
+                ,  permutations = 1000
                 ,  annualized_or_cumulative = 'cumulative'
               )
 

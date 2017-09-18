@@ -170,65 +170,9 @@ class perform:
         #self.BottomConstraint = bottomconstraint
         #self.TopConstraint = topconstraint
         print 'Running CovarianceMatrix'
-        self.CovarianceMatrix = self.covariancematrix()
         self.CorrelationMatrix = self.correlationmatrix()
-        #if showresults == 1:
-        #    print('showresults=' + str(showresults) + ' builddataframeofrefdateminusd2tod1stockpricechanges')
-        
-        #self.build(list_of_symbols,showresults)
-    
-
-
-        #-------------------------------------------------------------------    
-        import numpy
-        import config
-        import mytools
-        import datetime
-        import os
-        mycachefolder = config.mycachefolder
-        mytools.general().make_sure_path_exists(mycachefolder)    
-        date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-
-        print 'covariancematrix'
-        cov = self.CovarianceMatrix
-        cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' covariance.csv')
-        cov.to_csv(cachedfilepathname,columns=(list(cov.columns.values)))
-        
-        print 'correlationmatrix'
-        cor = self.CorrelationMatrix
-        cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' correlation.csv')
-        cor.to_csv(cachedfilepathname,columns=(list(cor.columns.values)))
-
-        print 'prices'
-        prc = self.AlignedPriceHistoryDataframe
-        cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' prices.csv')
-        prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
-        #print prc
-
-        print 'aggregatedreturns'
-        #ret = self.AlignedReturnsDataframe
-        agret = self.AggregatedReturnsDataframe
-        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
-        cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedreturns.csv')
-        agret.to_csv(cachedfilepathname,columns=(list(agret.columns.values)))
-
-        print 'dailyreturns'
-        #ret = self.AlignedReturnsDataframe
-        ret = self.ReturnsClass.ReturnsDataframe
-        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
-        cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' returns.csv')
-        ret.to_csv(cachedfilepathname,columns=(list(ret.columns.values)))
-
-        print 'length of prc', len(prc)
-
-        #print '---- AnnualizedReturnDataframe-----'
-        #print self.ReturnsClass.AggregatedReturnsDataframe
-
+        self.CovarianceMatrix = self.covariancematrix()
+        print 'Running Permutations'
         df_perms = self.permutationstodataframe(permutations)
         self.PermutationsDataframe = df_perms
 #        print df_perms
