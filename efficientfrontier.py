@@ -82,11 +82,11 @@ class perform:
         return self._PermutationsDataframe
     PermutationsDataframe = property(getPermutationsDataframe, setPermutationsDataframe)
 
-    def set_AggregatedReturnsDataframe(self,AggregatedReturnsDataframe):
-        self._AggregatedReturnsDataframe = AggregatedReturnsDataframe
-    def get_AggregatedReturnsDataframe(self):
-        return self._AggregatedReturnsDataframe
-    AggregatedReturnsDataframe = property(get_AggregatedReturnsDataframe, set_AggregatedReturnsDataframe)
+##    def set_AggregatedReturnsDataframe(self,AggregatedReturnsDataframe):
+##        self._AggregatedReturnsDataframe = AggregatedReturnsDataframe
+##    def get_AggregatedReturnsDataframe(self):
+##        return self._AggregatedReturnsDataframe
+##    AggregatedReturnsDataframe = property(get_AggregatedReturnsDataframe, set_AggregatedReturnsDataframe)
 ##
 ##    def set_CumulativeReturnsDataframe(self,CumulativeReturnsDataframe):
 ##        self._CumulativeReturnsDataframe = CumulativeReturnsDataframe
@@ -101,18 +101,32 @@ class perform:
         return self._SymbolsList
     SymbolsList = property(get_SymbolsList, set_SymbolsList)
 
-    def set_AlignedReturnsDataframe(self,AlignedReturnsDataframe):
-        self._AlignedReturnsDataframe = AlignedReturnsDataframe
-    def get_AlignedReturnsDataframe(self):
-        return self._AlignedReturnsDataframe
-    AlignedReturnsDataframe = property(get_AlignedReturnsDataframe, set_AlignedReturnsDataframe)
+    def set_AlignedTotalReturnsDataframe(self,AlignedTotalReturnsDataframe):
+        self._AlignedTotalReturnsDataframe = AlignedTotalReturnsDataframe
+    def get_AlignedTotalReturnsDataframe(self):
+        return self._AlignedTotalReturnsDataframe
+    AlignedTotalReturnsDataframe = property(get_AlignedTotalReturnsDataframe, set_AlignedTotalReturnsDataframe)
 
-    #AlignedPriceHistoryDataframe
-    def set_AlignedPriceHistoryDataframe(self,AlignedPriceHistoryDataframe):
-        self._AlignedPriceHistoryDataframe = AlignedPriceHistoryDataframe
-    def get_AlignedPriceHistoryDataframe(self):
-        return self._AlignedPriceHistoryDataframe
-    AlignedPriceHistoryDataframe = property(get_AlignedPriceHistoryDataframe, set_AlignedPriceHistoryDataframe)
+    def set_AlignedPriceChangeReturnsDataframe(self,AlignedPriceChangeReturnsDataframe):
+        self._AlignedPriceChangeReturnsDataframe = AlignedPriceChangeReturnsDataframe
+    def get_AlignedPriceChangeReturnsDataframe(self):
+        return self._AlignedPriceChangeReturnsDataframe
+    AlignedPriceChangeReturnsDataframe = property(get_AlignedPriceChangeReturnsDataframe, set_AlignedPriceChangeReturnsDataframe)
+
+    #AlignedAdjClosePriceHistoryDataframe
+    def set_AlignedAdjClosePriceHistoryDataframe(self,AlignedAdjClosePriceHistoryDataframe):
+        self._AlignedAdjClosePriceHistoryDataframe = AlignedAdjClosePriceHistoryDataframe
+    def get_AlignedAdjClosePriceHistoryDataframe(self):
+        return self._AlignedAdjClosePriceHistoryDataframe
+    AlignedAdjClosePriceHistoryDataframe = property(get_AlignedAdjClosePriceHistoryDataframe, set_AlignedAdjClosePriceHistoryDataframe)
+
+    #AlignedClosePriceHistoryDataframe
+    def set_AlignedClosePriceHistoryDataframe(self,AlignedClosePriceHistoryDataframe):
+        self._AlignedClosePriceHistoryDataframe = AlignedClosePriceHistoryDataframe
+    def get_AlignedClosePriceHistoryDataframe(self):
+        return self._AlignedClosePriceHistoryDataframe
+    AlignedClosePriceHistoryDataframe = property(get_AlignedClosePriceHistoryDataframe, set_AlignedClosePriceHistoryDataframe)
+
 
     def set_BottomConstraint(self,BottomConstraint):
         self._BottomConstraint = BottomConstraint
@@ -164,7 +178,7 @@ class perform:
         self.EndDateString = enddate
         self.AnnualizedOrCumulative = annualized_or_cumulative
         self._compilehistoricaldataframes()
-        #print oReturns.AggregatedReturnsDataframe()
+        
         #self.ReturnsClass = oReturns
         
         #self.BottomConstraint = bottomconstraint
@@ -194,120 +208,96 @@ class perform:
 
     def _compilehistoricaldataframes(self
                  , showresults = 0):
-
-        #'^GSmr   ^OEX    ^VIX    ^OEX    ^MID   ^RUT   ^DJI
-#        if self.Period == 'daily':
-#            import pullreturnsdaily as pr
-#        else:
-#            import pullreturnsmonthly as pr
         
-        #dict_of_df_pricehistory = {}
-        dict_of_df_returns = {}
-        # Build the annualized returns series
-        mysymbolslist = self.SymbolsList # list_of_symbols #['^GSPC','^DJI','^MID','^OEX','AAPL','LEO']
+        mysymbolslist = self.SymbolsList 
         ser_annual = pd.Series()
+        
         import pullreturns as pr
-        print 'ok got here'
         o = pr.perform(
                         symbols = mysymbolslist
                         , startdate = self.StartDateString
                         , enddate = self.EndDateString
-                    )
-        #print 'ok got here'
-        df_alignedpricehistory = o.StockHistoryDataframe
-        #print df_alignedpricehistory
-        df_returns = o.ReturnsDataframe
-        #print df_returns
-        df_aggregatedreturns = o.AggregatedReturnsDataframe
-        #print df_aggregatedreturns
-        
-        #print df_prices
-        #stop
-        #print df_returns
-        #print '------------------ ok'
-        for symbol in mysymbolslist:
-            
-            #df_prices_ticker = df_prices[(df_prices.ticker == symbol)]
-            df_returns_ticker = df_returns[(df_returns.ticker == symbol)]
-            df_returns_ticker.set_index(['curr_date'], inplace=True)
-            #df_prices_ticker = df_prices[symbol]
-            #df_returns_ticker = df_returns[symbol]
-            
-            
-            #print '------------------ symbol'
-            #print df_returns_ticker
-            #dict_of_df_pricehistory[symbol] = df_prices_ticker
-            dict_of_df_returns[symbol] = df_returns_ticker
-            #rrrrrrr
-            #ser_annual = ser_annual.set_value(symbol, annualizedreturn)
-        #print 'xxxxxaaa'
-        #print dict_of_df_returns
-        
-        
-        
+        )
+    
+        df_alignedadjclosepricehistory = o.HistoryOfAdjClosePricesDataframe
+        df_totalreturns = o.TotalReturnsDataframe
+        df_aggregatedtotalreturns = o.AggregatedTotalReturnsDataframe
+        dict_of_df_totalreturns = {}
 
+        df_alignedclosepricehistory = o.HistoryOfClosePricesDataframe
+        df_pricechangereturns = o.PriceChangeReturnsDataframe
+        df_aggregatedpricechangereturns = o.AggregatedPriceChangeReturnsDataframe
+        dict_of_df_pricechangereturns = {}
+        
+        for symbol in mysymbolslist:
+ 
+            df_totalreturns_ticker = df_totalreturns[(df_totalreturns.ticker == symbol)]
+            df_totalreturns_ticker.set_index(['curr_date'], inplace=True)
+            dict_of_df_totalreturns[symbol] = df_totalreturns_ticker
+        
+            df_pricechangereturns_ticker = df_pricechangereturns[(df_pricechangereturns.ticker == symbol)]
+            df_pricechangereturns_ticker.set_index(['curr_date'], inplace=True)
+            dict_of_df_pricechangereturns[symbol] = df_pricechangereturns_ticker
+        
 
         index = ['X']
         columns = ['A','B','C']
         
-        # ----------------------------------------------------------------------
-        df_largestofreturns = pd.DataFrame(index=index, columns=columns)
-        df_largestofreturns = df_largestofreturns.fillna(0) # with 0s rather than NaNs
+        # Total here ----------------------------------------------------------------------
+        df_largestofreturns_total = pd.DataFrame(index=index, columns=columns)
+        df_largestofreturns_total = df_largestofreturns_total.fillna(0) # with 0s rather than NaNs
         #print df_largestofreturns
         
-        keyoflargestreturnsdf = ''
-        for k,v in dict_of_df_returns.items():
-            if len(v) > len(df_largestofreturns):
-                df_largestofreturns = v
-                keyoflargestreturnsdf = k
+        keyoflargestreturnsdf_total = ''
+        for k,v in dict_of_df_totalreturns.items():
+            if len(v) > len(df_largestofreturns_total):
+                df_largestofreturns_total = v
+                keyoflargestreturnsdf_total = k
 
-        df_alignedreturns = df_largestofreturns[['change_pct']]
-        df_alignedreturns.columns = [keyoflargestreturnsdf]
-        df_alignedreturns.sort_index
-             
-        for k,v in dict_of_df_returns.items():
-            if not k == keyoflargestreturnsdf:
-                df_new = v[['change_pct']] #ttttttt
-                #print df_new
+        df_alignedtotalreturns = df_largestofreturns_total[['change_pct']]
+        df_alignedtotalreturns.columns = [keyoflargestreturnsdf_total]
+        df_alignedtotalreturns.sort_index
+
+        for k,v in dict_of_df_totalreturns.items():
+            if not k == keyoflargestreturnsdf_total:
+                df_new = v[['change_pct']] 
                 df_new.columns = [k]
-                #print df_new
                 df_new.sort_index
-                #print df_new
-                #print df_alignedreturns 
-                #df_alignedreturns[k] = df_new
-                result = pd.concat([df_alignedreturns, df_new], axis=1, join='inner')
-                
-                df_alignedreturns = result
-                #print df_alignedreturns
-        
-        self.ReturnsClass = o
-        self.AlignedReturnsDataframe = df_alignedreturns
-        self.AlignedPriceHistoryDataframe = df_alignedpricehistory
-        self.AggregatedReturnsDataframe = o.AggregatedReturnsDataframe
-        self.SymbolsList = o.SymbolsList
-##        # ----------------------------------------------------------------------
-##        df_largestofpricehistory = pd.DataFrame(index=index, columns=columns)
-##        df_largestofpricehistory = df_largestofpricehistory.fillna(0) # with 0s rather than NaNs
-##        keyoflargestpricehistorydf = ''
-##        for k,v in dict_of_df_pricehistory.items():
-##            if len(v) > len(df_largestofpricehistory):
-##                df_largestofpricehistory = v
-##                keyoflargestpricehistorydf = k
-##
-##        df_alignedpricehistory = df_largestofpricehistory[['e_adjclose']]
-##        df_alignedpricehistory.columns = [keyoflargestpricehistorydf]
-##        df_alignedpricehistory.sort_index
-##             
-##        for k,v in dict_of_df_pricehistory.items():
-##            if not k == keyoflargestpricehistorydf:
-##                df_new = v[['e_adjclose']]
-##                df_new.columns = [k]
-##                df_new.sort_index
-##                df_alignedpricehistory[k] = df_new[k]
-##        
-##        self.PriceHistoryDataframe = df_alignedpricehistory
-##        # ----------------------------------------------------------------------
+                result = pd.concat([df_alignedtotalreturns, df_new], axis=1, join='inner')
+                df_alignedtotalreturns = result
 
+        # Price Change here----------------------------------------------------------------------
+        df_largestofreturns_pricechange = pd.DataFrame(index=index, columns=columns)
+        df_largestofreturns_pricechange = df_largestofreturns_pricechange.fillna(0) # with 0s rather than NaNs
+        #print df_largestofreturns
+        
+        keyoflargestreturnsdf_pricechange = ''
+        for k,v in dict_of_df_totalreturns.items():
+            if len(v) > len(df_largestofreturns_pricechange):
+                df_largestofreturns_pricechange = v
+                keyoflargestreturnsdf_pricechange = k
+                
+        df_alignedpricechangereturns = df_largestofreturns_pricechange[['change_pct']]
+        df_alignedpricechangereturns.columns = [keyoflargestreturnsdf_pricechange]
+        df_alignedpricechangereturns.sort_index
+             
+        for k,v in dict_of_df_pricechangereturns.items():
+            if not k == keyoflargestreturnsdf_pricechange:
+                df_new = v[['change_pct']] 
+                df_new.columns = [k]
+                df_new.sort_index
+                result = pd.concat([df_alignedpricechangereturns, df_new], axis=1, join='inner')
+                df_alignedpricechangereturns = result
+                
+        
+        self.AlignedTotalReturnsDataframe = df_alignedtotalreturns
+        self.AlignedAdjClosePriceHistoryDataframe = df_alignedadjclosepricehistory
+
+        self.AlignedPriceChangeReturnsDataframe = df_alignedpricechangereturns
+        self.AlignedClosePriceHistoryDataframe = df_alignedclosepricehistory
+
+        self.ReturnsClass = o
+        self.SymbolsList = o.SymbolsList
 
 
 
@@ -321,25 +311,25 @@ class perform:
 #        import numpy as np
 #        import pandas as pd
 
-        #df_alignedreturns = self.MonthlyReturnsDataframe #monthlyreturns(list_of_symbols)
-        #df_alignedreturns = self.compilereturnsdataframe(period)
-        #df_alignedreturns = self.compilereturnsdataframe(period,UseLogReturns)
-        df_alignedreturns = self.AlignedReturnsDataframe
-        df_alignedreturns = df_alignedreturns.dropna() #eeee
+        #df_alignedtotalreturns = self.MonthlyReturnsDataframe #monthlyreturns(list_of_symbols)
+        #df_alignedtotalreturns = self.compilereturnsdataframe(period)
+        #df_alignedtotalreturns = self.compilereturnsdataframe(period,UseLogReturns)
+        df_alignedpricechangereturns = self.AlignedPriceChangeReturnsDataframe
+        df_alignedpricechangereturns = df_alignedpricechangereturns.dropna() #eeee
         
         
-        covmatrix_array = np.cov(df_alignedreturns,None,0)
+        covmatrix_array = np.cov(df_alignedpricechangereturns,None,0)
         #good np.savetxt("cov.csv", covmatrix_array, delimiter=",", fmt='%s')
         
-        rows = np.array(list(df_alignedreturns))[: np.newaxis]
-        #str_data = np.char.mod("%10.6f", df_alignedreturns)
+        rows = np.array(list(df_alignedpricechangereturns))[: np.newaxis]
+        #str_data = np.char.mod("%10.6f", df_alignedpricechangereturns)
         
         #print str_data
         #print rows
-        #print list(df_alignedreturns)
+        #print list(df_alignedpricechangereturns)
         
         
-        df_covariancematrix = pd.DataFrame(covmatrix_array, index=rows, columns=list(df_alignedreturns))
+        df_covariancematrix = pd.DataFrame(covmatrix_array, index=rows, columns=list(df_alignedpricechangereturns))
 #        if period == 'daily':
 #            for i in range(len(df_covariancematrix)):
 #                print df_covariancematrix.iloc[i] 
@@ -349,7 +339,7 @@ class perform:
 #        print '                 covariance matrix'
 #        print '----------------------------------------------------'
         
-#        df_covariancematrix.to_csv('cov1.csv',columns=(list(df_alignedreturns)))
+#        df_covariancematrix.to_csv('cov1.csv',columns=(list(df_alignedtotalreturns)))
         
 
 
@@ -367,27 +357,27 @@ class perform:
 #        print '                 monthly returns'
 #        print '----------------------------------------------------'
 
-        #df_alignedreturns = self.MonthlyReturnsDataframe #self.monthlyreturns(list_of_symbols)
-        #df_alignedreturns = self.compilereturnsdataframe(period,UseLogReturns)
-        df_alignedreturns = self.AlignedReturnsDataframe
-        df_alignedreturns = df_alignedreturns.dropna()
-        #print '------------------- df_alignedreturns -------------------'
-        #print df_alignedreturns
-        #print '------------------- df_alignedreturns -------------------'
-        rows = np.array(list(df_alignedreturns))[: np.newaxis]
+        #df_alignedtotalreturns = self.MonthlyReturnsDataframe #self.monthlyreturns(list_of_symbols)
+        #df_alignedtotalreturns = self.compilereturnsdataframe(period,UseLogReturns)
+        df_alignedtotalreturns = self.AlignedTotalReturnsDataframe
+        df_alignedtotalreturns = df_alignedtotalreturns.dropna()
+        #print '------------------- df_alignedtotalreturns -------------------'
+        #print df_alignedtotalreturns
+        #print '------------------- df_alignedtotalreturns -------------------'
+        rows = np.array(list(df_alignedtotalreturns))[: np.newaxis]
 
         #print rows
         
-        corrmatrix_array = np.corrcoef(df_alignedreturns.T.values.tolist())
+        corrmatrix_array = np.corrcoef(df_alignedtotalreturns.T.values.tolist())
         #print corrmatrix_array
         
-        dfcorrelationmatrix = pd.DataFrame(corrmatrix_array, index=rows, columns=list(df_alignedreturns))
+        dfcorrelationmatrix = pd.DataFrame(corrmatrix_array, index=rows, columns=list(df_alignedtotalreturns))
 #        print '----------------------------------------------------'
 #        print '                 correlation matrix'
 #        print '----------------------------------------------------'
         
         #print dfcorrelationmatrix
-        #dfcorrelationmatrix.to_csv('corr1.csv',columns=(list(df_alignedreturns)))
+        #dfcorrelationmatrix.to_csv('corr1.csv',columns=(list(df_alignedtotalreturns)))
         
         return dfcorrelationmatrix
         #print '222',sqrt(float(9))
@@ -418,10 +408,10 @@ class perform:
         return fractions_series
 
 #    def portfolioreturnrandomweights(self,):
-#        return sumproduct(self.randomweightseries(),self.AggregatedReturnsDataframe)
+#        return sumproduct(self.randomweightseries(),self.AggregatedTotalReturnsDataframe)
 #
 #    def portfolioreturnequalweights(self,):
-#        return sumproduct(self.equalweightseries(),self.AggregatedReturnsDataframe)
+#        return sumproduct(self.equalweightseries(),self.AggregatedTotalReturnsDataframe)
 
 #    def portfoliostandarddeviationrandomweights(self,):
 #        #df = pd.DataFrame({'a' : [4,1,3], 'b' : [5,2,4]},index=[1,2,3])
@@ -451,20 +441,26 @@ class perform:
             rws = self.randomweightseries()
         #print 'randomweightseries'
         #print rws
-        #print self.AggregatedReturnsDataframe
+        #print self.AggregatedTotalReturnsDataframe
         if self.AnnualizedOrCumulative == 'cumulative':
-            aggregatedreturn_list = self.AggregatedReturnsDataframe['cumulative_return'].tolist()
+            aggregatedreturn_list = self.ReturnsClass.AggregatedTotalReturnsDataframe['cumulative_return'].tolist()
         else:
-            aggregatedreturn_list = self.AggregatedReturnsDataframe['annualized_return'].tolist()
+            aggregatedreturn_list = self.ReturnsClass.AggregatedTotalReturnsDataframe['annualized_return'].tolist()
         #print 'aggregatedreturn_list'
         #print aggregatedreturn_list
         portfolioreturn = sumproduct(rws,aggregatedreturn_list)
         #print 'portfolioreturn'
         #print portfolioreturn
         df = self.covariancematrix()
-        s1 = df.dot(rws)
-        portfoliovariance = s1.dot(rws.T)
-        portfoliostandarddeviation = mth.sqrt(portfoliovariance)
+
+        #old way
+##        s1 = df.dot(rws)
+##        portfoliovariance = s1.dot(rws.T)
+##        portfoliostandarddeviation = mth.sqrt(portfoliovariance)
+
+        import numpy as np
+        portfoliostandarddeviation = np.sqrt(np.dot(rws.T,np.dot(df, rws)))
+        
         data = [rws,portfolioreturn,portfoliostandarddeviation]
         index = ['randomweightseries','portfolioreturn','portfoliostandarddeviation']
         returnseries = pd.Series(data, index=index)
@@ -557,7 +553,11 @@ if __name__=='__main__':
                 ,  permutations = 11
                 ,  annualized_or_cumulative = 'cumulative'
                 )
-    print o.AggregatedReturnsDataframe
+    
+    print 'AggregatedTotalReturnsDataframe'
+    print o.ReturnsClass.AggregatedTotalReturnsDataframe
+    print 'AlignedClosePriceHistoryDataframe'
+    print o.AlignedClosePriceHistoryDataframe
 ##    #-------------------------------------------------------------------
 ##    df_perms = o.PermutationsDataframe
 ##    print df_perms

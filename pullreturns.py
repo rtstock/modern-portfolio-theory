@@ -60,29 +60,47 @@ class perform:
         return self._EndDateString
     EndDateString = property(get_EndDateString, set_EndDateString)
 
-    def set_StockHistoryDataframe(self,StockHistoryDataframe):
-        self._StockHistoryDataframe = StockHistoryDataframe
-    def get_StockHistoryDataframe(self):
-        return self._StockHistoryDataframe
-    StockHistoryDataframe = property(get_StockHistoryDataframe, set_StockHistoryDataframe)
+    def set_HistoryOfAdjClosePricesDataframe(self,HistoryOfAdjClosePricesDataframe):
+        self._HistoryOfAdjClosePricesDataframe = HistoryOfAdjClosePricesDataframe
+    def get_HistoryOfAdjClosePricesDataframe(self):
+        return self._HistoryOfAdjClosePricesDataframe
+    HistoryOfAdjClosePricesDataframe = property(get_HistoryOfAdjClosePricesDataframe, set_HistoryOfAdjClosePricesDataframe)
 
-    def set_ReturnsDataframe(self,ReturnsDataframe):
-        self._ReturnsDataframe = ReturnsDataframe
-    def get_ReturnsDataframe(self):
-        return self._ReturnsDataframe
-    ReturnsDataframe = property(get_ReturnsDataframe, set_ReturnsDataframe)
-
-    def set_ReturnsDataframeTimes100(self,ReturnsDataframeTimes100):
-        self._ReturnsDataframeTimes100 = ReturnsDataframeTimes100
-    def get_ReturnsDataframeTimes100(self):
-        return self._ReturnsDataframeTimes100
-    ReturnsDataframeTimes100 = property(get_ReturnsDataframeTimes100, set_ReturnsDataframeTimes100)
+    def set_HistoryOfClosePricesDataframe(self,HistoryOfClosePricesDataframe):
+        self._HistoryOfClosePricesDataframe = HistoryOfClosePricesDataframe
+    def get_HistoryOfClosePricesDataframe(self):
+        return self._HistoryOfClosePricesDataframe
+    HistoryOfClosePricesDataframe = property(get_HistoryOfClosePricesDataframe, set_HistoryOfClosePricesDataframe)
     
-    def set_AggregatedReturnsDataframe(self,AggregatedReturnsDataframe):
-        self._AggregatedReturnsDataframe = AggregatedReturnsDataframe
-    def get_AggregatedReturnsDataframe(self):
-        return self._AggregatedReturnsDataframe
-    AggregatedReturnsDataframe = property(get_AggregatedReturnsDataframe, set_AggregatedReturnsDataframe)
+    def set_TotalReturnsDataframe(self,TotalReturnsDataframe):
+        self._TotalReturnsDataframe = TotalReturnsDataframe
+    def get_TotalReturnsDataframe(self):
+        return self._TotalReturnsDataframe
+    TotalReturnsDataframe = property(get_TotalReturnsDataframe, set_TotalReturnsDataframe)
+    
+    def set_PriceChangeReturnsDataframe(self,PriceChangeReturnsDataframe):
+        self._PriceChangeReturnsDataframe = PriceChangeReturnsDataframe
+    def get_PriceChangeReturnsDataframe(self):
+        return self._PriceChangeReturnsDataframe
+    PriceChangeReturnsDataframe = property(get_PriceChangeReturnsDataframe, set_PriceChangeReturnsDataframe)
+##
+##    def set_TotalReturnsDataframeTimes100(self,TotalReturnsDataframeTimes100):
+##        self._TotalReturnsDataframeTimes100 = TotalReturnsDataframeTimes100
+##    def get_TotalReturnsDataframeTimes100(self):
+##        return self._TotalReturnsDataframeTimes100
+##    TotalReturnsDataframeTimes100 = property(get_TotalReturnsDataframeTimes100, set_TotalReturnsDataframeTimes100)
+    
+    def set_AggregatedTotalReturnsDataframe(self,AggregatedTotalReturnsDataframe):
+        self._AggregatedTotalReturnsDataframe = AggregatedTotalReturnsDataframe
+    def get_AggregatedTotalReturnsDataframe(self):
+        return self._AggregatedTotalReturnsDataframe
+    AggregatedTotalReturnsDataframe = property(get_AggregatedTotalReturnsDataframe, set_AggregatedTotalReturnsDataframe)
+    
+    def set_AggregatedPriceChangeReturnsDataframe(self,AggregatedPriceChangeReturnsDataframe):
+        self._AggregatedPriceChangeReturnsDataframe = AggregatedPriceChangeReturnsDataframe
+    def get_AggregatedPriceChangeReturnsDataframe(self):
+        return self._AggregatedPriceChangeReturnsDataframe
+    AggregatedPriceChangeReturnsDataframe = property(get_AggregatedPriceChangeReturnsDataframe, set_AggregatedPriceChangeReturnsDataframe)
     
     def __init__(self
                     , symbols
@@ -105,16 +123,22 @@ class perform:
         list_of_good_symbols = np.unique(df_good[['Ticker']])
         print 'list_of_good_symbols', list_of_good_symbols
         self.SymbolsList = list_of_good_symbols
-        df_pivot = df_good.pivot(index='Date', columns='Ticker', values='Adj Close')
-        #print df_pivot
-        self.StockHistoryDataframe = df_pivot
+
+        df_pivotadjclose = df_good.pivot(index='Date', columns='Ticker', values='Adj Close')
+        df_pivotclose = df_good.pivot(index='Date', columns='Ticker', values='Close')
+        #print df_pivotadjclose
+        self.HistoryOfAdjClosePricesDataframe = df_pivotadjclose
+        self.HistoryOfClosePricesDataframe = df_pivotclose
         #import pullpricesusingpandas as pp
-        #self.StockHistoryDataframe = pp.stockhistory(symbols,startdate,enddate)
-        self.ReturnsDataframe,self.ReturnsDataframeTimes100 = self.dailyreturns()
-        self.AggregatedReturnsDataframe = self.aggregatedreturns()
+        #self.HistoryOfAdjClosePricesDataframe = pp.stockhistory(symbols,startdate,enddate)
+        self.TotalReturnsDataframe = self.dailyreturns('Total')
+        self.PriceChangeReturnsDataframe = self.dailyreturns('PriceChange')
+        
+        self.AggregatedTotalReturnsDataframe = self.aggregatedreturns('Total')
+        self.AggregatedPriceChangeReturnsDataframe = self.aggregatedreturns('PriceChange')
                                           
 ##    def calc_beta_test02():
-##        df = self.AggregatedReturnsDataframe
+##        df = self.AggregatedTotalReturnsDataframe
 ##        df['mean'] = df.mean(axis=1)
 ##        np_array = df.values
 ##        print np_array
@@ -134,13 +158,16 @@ class perform:
 ##        beta = covariance[0,1]/covariance[1,1]
 ##        return beta
 
-    def dailyreturns(self,):
+    def dailyreturns(self,totalorpricechange='PriceChange'):
 
         symbols = self.SymbolsList 
         import datetime
         today_date = datetime.date.today()
         #import pullpricesusingpandas as pp
-        df_00 = self.StockHistoryDataframe
+        if totalorpricechange == 'PriceChange':
+            df_00 = self.HistoryOfClosePricesDataframe
+        else:
+            df_00 = self.HistoryOfAdjClosePricesDataframe
         
         import pandas as pd
         dates1 = pd.date_range('1910-01-01', str(today_date), freq='D')
@@ -190,25 +217,30 @@ class perform:
         headers = rows_dailyreturnstimes100.pop(0)
         df_dailyreturnstimes100 = pd.DataFrame(rows_dailyreturnstimes100, columns = headers)
         
-        return df_dailyreturns,df_dailyreturnstimes100
+        return df_dailyreturns #,df_dailyreturnstimes100
 
 
-    def aggregatedreturns(self):
-        ar = self._aggregateddailyreturns()
-        
-        #if uselogreturns == False:
-        #    ar = self._annualizeddailyreturn()  
-        #else:
-        #    ar = self._annualizeddailyreturnusinglogreturns()
-        return ar
+##    def aggregatedreturns(self):
+##        ar = self._aggregateddailyreturns()
+##        
+##        #if uselogreturns == False:
+##        #    ar = self._annualizeddailyreturn()  
+##        #else:
+##        #    ar = self._annualizeddailyreturnusinglogreturns()
+##        return ar
     
 
-    def _aggregateddailyreturns(self,):
+    def aggregatedreturns(self,totalorpricechange='PriceChange'):
         ls_final = []
-        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','random_return','start_adjprice','end_adjprice'])
+        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','random_return','start_adjprice','end_adjprice','stdev'])
         for s in self.SymbolsList:
-            print 'Doing annualized return for',s
-            dfr = self.ReturnsDataframe.copy()
+            print 'Doing aggregated return for',s
+            if totalorpricechange == 'PriceChange':
+                dfr = self.TotalReturnsDataframe.copy()
+            else:
+                dfr = self.PriceChangeReturnsDataframe.copy()
+            
+            #print dfr
             df_dailyreturns = dfr[(dfr.ticker == s)]
             df_dailyreturns = df_dailyreturns.dropna()
             df_dailyreturns.sort_index(inplace = True)
@@ -228,6 +260,9 @@ class perform:
             lastdate = df_dailyreturns.loc[last_valid_index]['curr_date']
             end_adjprice = df_dailyreturns.loc[last_valid_index]['curr_value']
             #df_dailyreturns.loc[df_dailyreturns.index,'change_pct']= df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'] + float(1.0)
+
+            stdev = float(df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'].std())
+            #print 'stdev', s,std_float
             df_dailyreturns.loc[df_dailyreturns.index,'change_pct_unitized'] = df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'] + float(1.0)
             ls_dailyreturns = df_dailyreturns['change_pct_unitized'].values.tolist()
             #print 'lastdate',lastdate
@@ -253,52 +288,45 @@ class perform:
             randret = random.randint(0, 200)  # 0 or 1(both incl.)
             randr = adr * randret/100.0
 
-            ls_final.append([s,firstdate,lastdate,adr,cumr,randr,start_adjprice,end_adjprice])
+            ls_final.append([s,firstdate,lastdate,adr,cumr,randr,start_adjprice,end_adjprice,stdev])
         headers = ls_final.pop(0)
         import pandas as pd
         df_final = pd.DataFrame(ls_final, columns = headers)
         return df_final
 
 
-    def _annualizeddailyreturnusinglogreturns_old(self,):
-        # =PRODUCT(F85:F155)^(1/($B85/12))-1
-        # [(1.13)*(0.98)*(1.15)*(1.08)]^(12/42)-1
-        df_dailyreturns = self.dailyreturns()
-        df_dailyreturns = df_dailyreturns.dropna()
-        
-        df_dailyreturns.sort_index(inplace = True)
-        firstdate = df_dailyreturns.loc[0]['b_periodend']
-        #print firstdate
-        lastdate = df_dailyreturns.loc[len(df_dailyreturns)-1]['b_periodend']
-        #print lastdate
-        #print df_dailyreturns
-        df_dailyreturns.loc[df_dailyreturns.index,'e_logreturnunitized']= df_dailyreturns.loc[df_dailyreturns.index, 'e_logreturn'] + float(1.0)
-        ls_dailyreturns = df_dailyreturns['e_logreturnunitized'].values.tolist()
-        listmultiplied = reduce(lambda x, y: x*y, ls_dailyreturns)
-        #print listmultiplied
+##    def _annualizeddailyreturnusinglogreturns_old(self,):
+##        # =PRODUCT(F85:F155)^(1/($B85/12))-1
+##        # [(1.13)*(0.98)*(1.15)*(1.08)]^(12/42)-1
+##        df_dailyreturns = self.dailyreturns()
+##        df_dailyreturns = df_dailyreturns.dropna()
+##        
+##        df_dailyreturns.sort_index(inplace = True)
+##        firstdate = df_dailyreturns.loc[0]['b_periodend']
+##        #print firstdate
+##        lastdate = df_dailyreturns.loc[len(df_dailyreturns)-1]['b_periodend']
+##        #print lastdate
+##        #print df_dailyreturns
+##        df_dailyreturns.loc[df_dailyreturns.index,'e_logreturnunitized']= df_dailyreturns.loc[df_dailyreturns.index, 'e_logreturn'] + float(1.0)
+##        ls_dailyreturns = df_dailyreturns['e_logreturnunitized'].values.tolist()
+##        listmultiplied = reduce(lambda x, y: x*y, ls_dailyreturns)
+##        #print listmultiplied
+##
+##        #years between
+##        import datetime
+##        time1 = datetime.datetime.strptime(str(firstdate) + ' 16:00', "%Y-%m-%d %H:%M")
+##        time2 = datetime.datetime.strptime(str(lastdate) + ' 16:00', "%Y-%m-%d %H:%M")#datetime.datetime.now() 
+##        elapsedTime = time2 - time1
+##        yrs = float(divmod(elapsedTime.total_seconds(), 60.0)[0]/60.0/24.0/365.0)
+##        #print 'yrs',yrs
+##
+##        adr = listmultiplied ** (float(1)/(yrs)) - 1.0
+##        return adr
 
-        #years between
-        import datetime
-        time1 = datetime.datetime.strptime(str(firstdate) + ' 16:00', "%Y-%m-%d %H:%M")
-        time2 = datetime.datetime.strptime(str(lastdate) + ' 16:00', "%Y-%m-%d %H:%M")#datetime.datetime.now() 
-        elapsedTime = time2 - time1
-        yrs = float(divmod(elapsedTime.total_seconds(), 60.0)[0]/60.0/24.0/365.0)
-        #print 'yrs',yrs
-
-        adr = listmultiplied ** (float(1)/(yrs)) - 1.0
-        return adr
-
-
-
-    def standarddeviationofmonthlyreturns(self,):
-        df_monthlyreturnsusingyahoosymbols = df_monthlyreturnsusingyahoosymbols = self.MonthlyReturnsDataframe
-        std_float = float(df_monthlyreturnsusingyahoosymbols['e_pctchange'].std())
-        return std_float
     
 if __name__=='__main__':
     #symbols = ['FB', 'MSFT', 'SPY', 'IBM', 'T', 'AMD','INTC','ACN', 'VZ', 'ORCL','DIS','BA','AMGN','MCD','CELG','LLY','COST','BIIB','MDLZ','TJX']
-    symbols  = ['FB', 'MSFT', 'SPY', 'IBM']
-    forecast = ['.03', 'MSFT', 'SPY', 'IBM']
+    symbols  = ['FB', 'MSFT', 'SPY', 'IBM']   
 ##    symbols = ['GOOGL',
 ##                            'FB',
 ##                            'MSFT',
@@ -324,13 +352,12 @@ if __name__=='__main__':
     enddate = '2017-06-30'
     o = perform(symbols,startdate,enddate)
 ##    print '------ Stock History Dataframe ------'
-##    print o.StockHistoryDataframe
+##    print o.HistoryOfAdjClosePricesDataframe
     #print '------ Daily Returns Dataframe ------'
-    #print o.ReturnsDataframe
+    #print o.TotalReturnsDataframe
 
-    print '------ Daily Returns Times 100 Dataframe ------'
-    print o.ReturnsDataframeTimes100
+    print '------ AggregatedTotalReturnsDataframe Returns ------'
+    print o.AggregatedTotalReturnsDataframe
 
-    print '------ AggregatedReturnsDataframe Returns ------'
-    print o.AggregatedReturnsDataframe
-
+    print '------ AggregatedPriceChangeReturnsDataframe Returns ------'
+    print o.AggregatedPriceChangeReturnsDataframe

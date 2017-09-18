@@ -26,16 +26,18 @@ def stockhistoryasdataframe(symbols,fromdate,todate):
     list_of_missing = []
     for d, item in p.swapaxes(0, 1).iteritems():
         for t,x in item.iteritems():
+            #print x
             if np.isnan(x['Adj Close']) == True:
-                list_of_missing.append({'Date':d, 'Ticker':t,'Adj Close':x['Adj Close']})
+                list_of_missing.append({'Date':d, 'Ticker':t,'Adj Close':x['Adj Close'],'Close':x['Close']})
             else:
-                list_of_dicts.append({'Date':d, 'Ticker':t,'Adj Close':x['Adj Close']})
+                list_of_dicts.append({'Date':d, 'Ticker':t,'Adj Close':x['Adj Close'],'Close':x['Close']})
     df_good = pd.DataFrame(list_of_dicts)
     df_missing = pd.DataFrame(list_of_missing)
     return df_good, df_missing
 
-def stockhistoryandmissingasdataframe(symbols,fromdate,todate):
+def stockhistoryandmissingasdataframe_old(symbols,fromdate,todate):
     p = stockhistory(symbols,fromdate,todate)
+
     dict_prices = {}
     list_of_dicts = []
     list_of_missing = []

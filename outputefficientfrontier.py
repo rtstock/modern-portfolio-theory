@@ -77,28 +77,45 @@ class output:
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' correlation.csv')
         cor.to_csv(cachedfilepathname,columns=(list(cor.columns.values)))
 
-        print 'prices'
-        prc = o.AlignedPriceHistoryDataframe
+        print 'close prices'
+        prc = o.AlignedClosePriceHistoryDataframe
         cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' prices.csv')
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' closeprices.csv')
         prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
         #print prc
 
+        print 'adjclose prices'
+        prc = o.AlignedAdjClosePriceHistoryDataframe
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' adjcloseprices.csv')
+        prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
+        #print prc
+
+
         print 'aggregatedreturns'
         #ret = o.AlignedReturnsDataframe
-        agret = o.AggregatedReturnsDataframe
+        agret = o.ReturnsClass.AggregatedTotalReturnsDataframe
         #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
         cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedreturns.csv')
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedtotalreturns.csv')
         agret.to_csv(cachedfilepathname,columns=(list(agret.columns.values)))
 
-        print 'dailyreturns'
+        print 'totaldailyreturns'
         #ret = o.AlignedReturnsDataframe
-        ret = o.ReturnsClass.ReturnsDataframe
+        ret = o.ReturnsClass.TotalReturnsDataframe
         #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
         cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' returns.csv')
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' Totalreturns.csv')
         ret.to_csv(cachedfilepathname,columns=(list(ret.columns.values)))
+
+        print 'totalreturnsaligned'
+        retalign = o.AlignedTotalReturnsDataframe
+        #ret = o.ReturnsClass.ReturnsDataframe
+        #ret['change_pct100'] = df['change_pct'].apply(lambda x: x*100.0)
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' totalreturnsalign.csv')
+        retalign.to_csv(cachedfilepathname,columns=(list(retalign.columns.values)))
+
 
         print 'length of prc', len(prc)
 
