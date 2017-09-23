@@ -1,5 +1,0 @@
-from pandas_datareader import data, wb
-import datetime
-start = datetime(2016, 12, 31)
-end = datetime.now()
-INPX = data.DataReader('INPX', 'yahoo', start, end)

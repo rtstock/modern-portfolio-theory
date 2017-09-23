@@ -1,5 +1,0 @@
-import random
-
-# int
-x = random.randint(0, 200)  # 0 or 1(both incl.)
-print x/100.0

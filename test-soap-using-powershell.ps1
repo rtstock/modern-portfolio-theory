@@ -1,1 +1,0 @@
-Invoke-WebRequest http://www.webservicex.net/MortgageIndex.asmx?WSDL -Method Post -ContentType "text/xml" -InFile C:\Batches\AutomationProjects\EfficientFrontier\code_using_yahoofinance_test01\bat\test-soap-file-01.txt -OutFile C:\Batches\AutomationProjects\EfficientFrontier\code_using_yahoofinance_test01\bat\test-soap-file-01-response.txt
