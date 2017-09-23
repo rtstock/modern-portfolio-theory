@@ -49,16 +49,16 @@ class output:
         o = ef.perform(symbols,startdate,enddate,permutations,annualized_or_cumulative) # '^GSPC','^OEX','^MID','^RUT','^DJI'
         self.EfficientFrontierObject = o
         print 'Count of Permutations PLUS equal weighted',len(self.EfficientFrontierObject.PermutationsDataframe)
-        dict_output = self.PrintOutput()
-        permutationsfile = self.OutputPermutations
-        dict_output['permutations'] = permutationsfile
-        sailfile = self.drawsail(0.90)
-        dict_output['sail'] = sailfile
+        dict_output = self.printoutput()
+        permutations_file = self.outputpermutations()
+        dict_output['permutations'] = permutations_file
+        #sail_file = self.drawsail(0.90)
+        #dict_output['sail'] = sail_file
         
         self.DictionaryOfOutputFiles = dict_output
         print len(dict_output), 'files created'
         
-    def PrintOutput(self,):
+    def printoutput(self,):
 
         import numpy
         import config
@@ -73,67 +73,73 @@ class output:
         date14 = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
         
         o = self.EfficientFrontierObject
-        print 'covariance matrix'
+        print 'covariancematrix'
         cov = o.CovarianceMatrix
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' covariance.csv')
         cov.to_csv(cachedfilepathname,columns=(list(cov.columns.values)))
-        d_returns['covariance matrix'] = cachedfilepathname
+        d_returns['covariancematrix'] = cachedfilepathname
         
-        print 'correlation matrix'
+        print 'correlationmatrix'
         cor = o.CorrelationMatrix
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' correlation.csv')
         cor.to_csv(cachedfilepathname,columns=(list(cor.columns.values)))
-        d_returns['correlation matrix'] = cachedfilepathname
+        d_returns['correlationmatrix'] = cachedfilepathname
         
         print 'close prices'
         prc = o.AlignedClosePriceHistoryDataframe
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' closeprices.csv')
         prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
-        d_returns['close prices'] = cachedfilepathname
+        d_returns['closeprices'] = cachedfilepathname
         
-        print 'adjclose prices'
+        print 'adjcloseprices'
         prc = o.AlignedAdjClosePriceHistoryDataframe
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' adjcloseprices.csv')
         prc.to_csv(cachedfilepathname,columns=(list(prc.columns.values)))
-        d_returns['adjclose prices'] = cachedfilepathname
+        d_returns['adjcloseprices'] = cachedfilepathname
         
+        print 'aggregatedpricechangereturns'
+        agret = o.ReturnsClass.AggregatedPriceChangeReturnsDataframe
+        cachedfilepathname = mycachefolder
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedpricechangereturns.csv')
+        agret.to_csv(cachedfilepathname,columns=(list(agret.columns.values)))
+        d_returns['aggregatedpricechangereturns'] = cachedfilepathname
         
-        print 'aggregated returns'
+        print 'aggregatedtotalreturns'
         agret = o.ReturnsClass.AggregatedTotalReturnsDataframe
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' aggregatedtotalreturns.csv')
         agret.to_csv(cachedfilepathname,columns=(list(agret.columns.values)))
-        d_returns['aggregated returns'] = cachedfilepathname
+        d_returns['aggregatedtotalreturns'] = cachedfilepathname
         
-        print 'totaldaily returns'
+        print 'totaldailyreturns'
         ret = o.ReturnsClass.TotalReturnsDataframe
         cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' totalreturns.csv')
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' totaldailyreturns.csv')
         ret.to_csv(cachedfilepathname,columns=(list(ret.columns.values)))
-        d_returns['totaldaily returns'] = cachedfilepathname
+        d_returns['totaldailyreturns'] = cachedfilepathname
         
-        print 'totalreturns aligned'
+        print 'totalreturnsaligned'
         retalign = o.AlignedTotalReturnsDataframe
         cachedfilepathname = mycachefolder
         cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' totalreturnsalign.csv')
         retalign.to_csv(cachedfilepathname,columns=(list(retalign.columns.values)))
-        d_returns['totalreturns aligned'] = cachedfilepathname
+        d_returns['totalreturnsaligned'] = cachedfilepathname
 
         print 'pricechangereturns aligned'
         pcralign = o.AlignedPriceChangeReturnsDataframe
         cachedfilepathname = mycachefolder
-        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' totalreturnsalign.csv')
+        cachedfilepathname = os.path.join(cachedfilepathname,date14 + ' pricechangereturnsaligned.csv')
         pcralign.to_csv(cachedfilepathname,columns=(list(pcralign.columns.values)))
-        d_returns['pricechangereturns aligned'] = cachedfilepathname
+        d_returns['pricechangereturnsaligned'] = cachedfilepathname
 
         print 'length of prc', len(prc)
         return d_returns
     
-    def OutputPermutations(self,):
+    def outputpermutations(self,):
         #--------------------------------------------------------
         import config
         import mytools

@@ -231,14 +231,17 @@ class perform:
     
 
     def aggregatedreturns(self,totalorpricechange='PriceChange'):
+        import numpy as np
+        import random
+        import datetime
         ls_final = []
-        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','random_return','start_adjprice','end_adjprice','stdev'])
+        ls_final.append(['symbol','start_date','end_date','annualized_return', 'cumulative_return','random_return','start_price','end_price','stdev','stdev_np','mean_np'])
         for s in self.SymbolsList:
             print 'Doing aggregated return for',s
             if totalorpricechange == 'PriceChange':
-                dfr = self.TotalReturnsDataframe.copy()
-            else:
                 dfr = self.PriceChangeReturnsDataframe.copy()
+            else:
+                dfr = self.TotalReturnsDataframe.copy()
             
             #print dfr
             df_dailyreturns = dfr[(dfr.ticker == s)]
@@ -253,15 +256,18 @@ class perform:
             first_valid_index = df_dailyreturns.first_valid_index()
             #print 'first_valid_index', first_valid_index
             firstdate = df_dailyreturns.loc[first_valid_index]['curr_date']
-            start_adjprice = df_dailyreturns.loc[first_valid_index]['curr_value']
+            start_price = df_dailyreturns.loc[first_valid_index]['curr_value']
             
             last_valid_index = df_dailyreturns.last_valid_index()
             #print 'last_valid_index',last_valid_index
             lastdate = df_dailyreturns.loc[last_valid_index]['curr_date']
-            end_adjprice = df_dailyreturns.loc[last_valid_index]['curr_value']
+            end_price = df_dailyreturns.loc[last_valid_index]['curr_value']
             #df_dailyreturns.loc[df_dailyreturns.index,'change_pct']= df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'] + float(1.0)
 
             stdev = float(df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'].std())
+            
+            stdev_np = np.std(df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'], ddof=1)
+            mean_np = np.mean(df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'])
             #print 'stdev', s,std_float
             df_dailyreturns.loc[df_dailyreturns.index,'change_pct_unitized'] = df_dailyreturns.loc[df_dailyreturns.index, 'change_pct'] + float(1.0)
             ls_dailyreturns = df_dailyreturns['change_pct_unitized'].values.tolist()
@@ -272,7 +278,7 @@ class perform:
             #print 'listmultiplied',listmultiplied
 
             #years between
-            import datetime
+
             time1 = datetime.datetime.strptime(str(firstdate) + ' 00:00:00.00', "%Y-%m-%d %H:%M:%S.%f")
             time2 = datetime.datetime.strptime(str(lastdate) + ' 23:59:59.999999', "%Y-%m-%d %H:%M:%S.%f") #datetime.datetime.now()
             #print 'times',time1,time2
@@ -284,11 +290,11 @@ class perform:
             df_dailyreturns.loc[df_dailyreturns.index,'cumulative_return']  = (1 + df_dailyreturns.change_pct).cumprod() - 1
             #print df_dailyreturns
             cumr = df_dailyreturns.loc[last_valid_index]['cumulative_return']
-            import random
+            
             randret = random.randint(0, 200)  # 0 or 1(both incl.)
             randr = adr * randret/100.0
 
-            ls_final.append([s,firstdate,lastdate,adr,cumr,randr,start_adjprice,end_adjprice,stdev])
+            ls_final.append([s,firstdate,lastdate,adr,cumr,randr,start_price,end_price,stdev,stdev_np,mean_np])
         headers = ls_final.pop(0)
         import pandas as pd
         df_final = pd.DataFrame(ls_final, columns = headers)

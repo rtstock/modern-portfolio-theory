@@ -87,17 +87,17 @@ class perform:
     AlignedClosePriceHistoryDataframe = property(get_AlignedClosePriceHistoryDataframe, set_AlignedClosePriceHistoryDataframe)
 
 
-    def set_BottomConstraint(self,BottomConstraint):
-        self._BottomConstraint = BottomConstraint
-    def get_BottomConstraint(self):
-        return self._BottomConstraint
-    BottomConstraint = property(get_BottomConstraint, set_BottomConstraint)
-
-    def set_TopConstraint(self,TopConstraint):
-        self._TopConstraint = TopConstraint
-    def get_TopConstraint(self):
-        return self._TopConstraint
-    TopConstraint = property(get_TopConstraint, set_TopConstraint)
+##    def set_BottomConstraint(self,BottomConstraint):
+##        self._BottomConstraint = BottomConstraint
+##    def get_BottomConstraint(self):
+##        return self._BottomConstraint
+##    BottomConstraint = property(get_BottomConstraint, set_BottomConstraint)
+##
+##    def set_TopConstraint(self,TopConstraint):
+##        self._TopConstraint = TopConstraint
+##    def get_TopConstraint(self):
+##        return self._TopConstraint
+##    TopConstraint = property(get_TopConstraint, set_TopConstraint)
 
     def set_StartDateString(self,StartDateString):
         self._StartDateString = StartDateString
@@ -254,12 +254,12 @@ class perform:
     def correlationmatrix(self
                  ):
 
-        df_alignedtotalreturns = self.AlignedTotalReturnsDataframe
-        df_alignedtotalreturns = df_alignedtotalreturns.dropna()
-        rows = np.array(list(df_alignedtotalreturns))[: np.newaxis]
-        corrmatrix_array = np.corrcoef(df_alignedtotalreturns.T.values.tolist())
+        df_alignedpricechangereturns = self.AlignedPriceChangeReturnsDataframe
+        df_alignedpricechangereturns = df_alignedpricechangereturns.dropna()
+        rows = np.array(list(df_alignedpricechangereturns))[: np.newaxis]
+        corrmatrix_array = np.corrcoef(df_alignedpricechangereturns.T.values.tolist())
         
-        dfcorrelationmatrix = pd.DataFrame(corrmatrix_array, index=rows, columns=list(df_alignedtotalreturns))
+        dfcorrelationmatrix = pd.DataFrame(corrmatrix_array, index=rows, columns=list(df_alignedpricechangereturns))
         
         return dfcorrelationmatrix
 
@@ -318,27 +318,28 @@ if __name__=='__main__':
 
     
     o = perform(
-               symbols = ['GOOGL',
+               symbols = [
+                            'GOOGL',
                             'FB',
                             'MSFT',
-                            'LRCX',
-                            'EVR',
-                            'MASI',
-                            'CELG',
-                            'AOS',
-                            'LPX',
-                            'MRK',
-                            'EVR',
-                            'JNJ',
-                            'INTC',
-                            #'GOLD',
-                            'LMT',
-                            'RTN',
-                            'BP',
-                            'T',
-                            'HSBC',
-                            'THO',
-                            'SPY'
+##                            'LRCX',
+##                            'EVR',
+##                            'MASI',
+##                            'CELG',
+##                            'AOS',
+##                            'LPX',
+##                            'MRK',
+##                            'EVR',
+##                            'JNJ',
+##                            'INTC',
+##                            #'GOLD',
+##                            'LMT',
+##                            'RTN',
+##                            'BP',
+##                            'T',
+##                            'HSBC',
+##                            'THO',
+##                            'SPY'
                             ]
                 ,  startdate = '2017-02-25'
                 ,  enddate = '2017-09-30'
