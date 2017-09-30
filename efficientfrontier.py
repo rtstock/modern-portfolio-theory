@@ -19,6 +19,17 @@ def constrained_sum_sample_nonneg(n, total):
 
     return [x - 1 for x in constrained_sum_sample_pos(n, total + n)]
 
+def unconstrained_sample_posneg(l, h , total, divisor=1):
+    """Return a randomly chosen list of n positive integers not summing to a specific total.
+    Each such list is equally likely to occur."""
+    import random
+    l1 = l * 100.0
+    h1 = h * 100.0
+    lst = []
+    for i in range(0,total):
+        lst.append(random.randrange(l1,h1,5)/100.0/divisor)
+    return lst
+
 
 import operator
 def sumproduct(*lists):
@@ -131,11 +142,15 @@ class perform:
         print('Initialized class efficientfrontier')
 
         self.SymbolsList = symbols
+        print 'Doing efficient frontier for',len(self.SymbolsList), 'symbols'
         print 'Doing efficient frontier for',self.SymbolsList
         self.StartDateString = startdate
         self.EndDateString = enddate
         self.AnnualizedOrCumulative = annualized_or_cumulative
         self._compilehistoricaldataframes()
+        newsymbolslist = self.ReturnsClass.SymbolsList
+        print 'Actual number of good symbols found',len(newsymbolslist), 'symbols'
+        self.SymbolsList = newsymbolslist
         print 'Running CovarianceMatrix'
         self.CorrelationMatrix = self.correlationmatrix()
         self.CovarianceMatrix = self.covariancematrix()
@@ -233,8 +248,8 @@ class perform:
 
         self.ReturnsClass = o
         self.SymbolsList = o.SymbolsList
-
-
+        print 'After processing _compilehistoricaldataframes:  len(self.SymbolsList)',len(self.SymbolsList)
+    
 
     def covariancematrix(self
                  ):
@@ -275,18 +290,31 @@ class perform:
 
     def randomweightseries(self, 
                      ):
-        int_list = constrained_sum_sample_pos(len(self.SymbolsList),100) 
+        int_list = constrained_sum_sample_pos(len(self.SymbolsList),200) 
         
         fractions_list = [float(x)/float(100) for x in int_list]
         
         fractions_series = pd.Series(fractions_list, index=self.SymbolsList)
         return fractions_series
 
+    def randomweightserieswithnegatives(self,
+                                        ):
+        #print 'rws len(self.SymbolsList)', len(self.SymbolsList)
+        int_list = unconstrained_sample_posneg(-5,5,len(self.SymbolsList),1)
+        #print 'rws len(int_list)', len(int_list)
+        fractions_list = [float(x)/float(100) for x in int_list]
+        #print 'rws len(fractions_list)', len(fractions_list)
+        fractions_series = pd.Series(fractions_list, index=self.SymbolsList)
+        #print 'rws len(fractions_series)', len(fractions_series)
+        return fractions_series
+
+
     def portfolioriskreturnrandomweight(self,oftype='random'):
         if oftype == 'equal':
             rws = self.equalweightseries()
         else:
-            rws = self.randomweightseries()
+            rws = self.randomweightserieswithnegatives()
+            
         if self.AnnualizedOrCumulative == 'cumulative':
             aggregatedreturn_list = self.ReturnsClass.AggregatedTotalReturnsDataframe['cumulative_return'].tolist()
         else:
@@ -318,36 +346,38 @@ if __name__=='__main__':
 
     
     o = perform(
-               symbols = [
-                            'GOOGL',
-                            'FB',
-                            'MSFT',
-##                            'LRCX',
-##                            'EVR',
-##                            'MASI',
-##                            'CELG',
-##                            'AOS',
-##                            'LPX',
-##                            'MRK',
-##                            'EVR',
-##                            'JNJ',
-##                            'INTC',
-##                            #'GOLD',
-##                            'LMT',
-##                            'RTN',
-##                            'BP',
-##                            'T',
-##                            'HSBC',
-##                            'THO',
-##                            'SPY'
-                            ]
-                ,  startdate = '2017-02-25'
-                ,  enddate = '2017-09-30'
-                ,  permutations = 11
+                symbols = ['MAR', 'MON', 'NOV', 'A', 'AAL', 'AAP', 'AAPL', 'ABBV', 'ABC', 'ABT', 'ACN', 'ADBE', 'ADI', 'ADM', 'ADP', 'ADS', 'ADSK', 'AEE', 'AEP', 'AES', 'AET', 'AFL', 'AGN', 'AIG', 'AIV', 'AIZ', 'AJG', 'AKAM', 'ALB', 'ALGN', 'ALK', 'ALL', 'ALLE', 'ALXN', 'AMAT', 'AMD', 'AME', 'AMG', 'AMGN', 'AMP', 'AMT', 'AMZN', 'ANDV', 'ANSS', 'ANTM', 'AON', 'AOS', 'APA', 'APC', 'APD', 'APH', 'ARE', 'ARNC', 'ATVI', 'AVB', 'AVGO', 'AVY', 'AWK', 'AXP', 'AYI', 'AZO', 'BA', 'BAC', 'BAX', 'BBT', 'BBY', 'BCR', 'BDX', 'BEN', 'BF.B', 'BHF', 'BHGE', 'BIIB', 'BK', 'BLK', 'BLL', 'BMY', 'BRK.B', 'BSX', 'BWA', 'BXP', 'C', 'CA', 'CAG', 'CAH', 'CAT', 'CB', 'CBG', 'CBOE', 'CBS', 'CCI', 'CCL', 'CDNS', 'CELG', 'CERN', 'CF', 'CFG', 'CHD', 'CHK', 'CHRW', 'CHTR', 'CI', 'CINF', 'CL', 'CLX', 'CMA', 'CMCSA', 'CME', 'CMG', 'CMI', 'CMS', 'CNC', 'CNP', 'COF', 'COG', 'COH', 'COL', 'COO', 'COP', 'COST', 'COTY', 'CPB', 'CRM', 'CSCO', 'CSRA', 'CSX', 'CTAS', 'CTL', 'CTSH', 'CTXS', 'CVS', 'CVX', 'CXO', 'D', 'DAL', 'DE', 'DFS', 'DG', 'DGX', 'DHI', 'DHR', 'DIS', 'DISCA', 'DISCK', 'DISH', 'DLPH', 'DLR', 'DLTR', 'DOV', 'DPS', 'DRE', 'DRI', 'DTE', 'DUK', 'DVA', 'DVN', 'DWDP', 'DXC', 'EA', 'EBAY', 'ECL', 'ED', 'EFX', 'EIX', 'EL', 'EMN', 'EMR', 'EOG', 'EQIX', 'EQR', 'EQT', 'ES', 'ESRX', 'ESS', 'ETFC', 'ETN', 'ETR', 'EVHC', 'EW', 'EXC', 'EXPD', 'EXPE', 'EXR', 'F', 'FAST', 'FB', 'FBHS', 'FCX', 'FDX', 'FE', 'FFIV', 'FIS', 'FISV', 'FITB', 'FL', 'FLIR', 'FLR', 'FLS', 'FMC', 'FOX', 'FOXA', 'FRT', 'FTI', 'FTV', 'GD', 'GE', 'GGP', 'GILD', 'GIS', 'GLW', 'GM', 'GOOG', 'GOOGL', 'GPC', 'GPN', 'GPS', 'GRMN', 'GS', 'GT', 'GWW', 'HAL', 'HAS', 'HBAN', 'HBI', 'HCA', 'HCN', 'HCP', 'HD', 'HES', 'HIG', 'HLT', 'HOG', 'HOLX', 'HON', 'HP', 'HPE', 'HPQ', 'HRB', 'HRL', 'HRS', 'HSIC', 'HST', 'HSY', 'HUM', 'IBM', 'ICE', 'IDXX', 'IFF', 'ILMN', 'INCY', 'INFO', 'INTC', 'INTU', 'IP', 'IPG', 'IR', 'IRM', 'ISRG', 'IT', 'ITW', 'IVZ', 'JBHT', 'JCI', 'JEC', 'JNJ', 'JNPR', 'JPM', 'JWN', 'K', 'KEY', 'KHC', 'KIM', 'KLAC', 'KMB', 'KMI', 'KMX', 'KO', 'KORS', 'KR', 'KSS', 'KSU', 'L', 'LB', 'LEG', 'LEN', 'LH', 'LKQ', 'LLL', 'LLY', 'LMT', 'LNC', 'LNT', 'LOW', 'LRCX', 'LUK', 'LUV', 'LVLT', 'LYB', 'M', 'MA', 'MAA', 'MAC', 'MAS', 'MAT', 'MCD', 'MCHP', 'MCK', 'MCO', 'MDLZ', 'MDT', 'MET', 'MGM', 'MHK', 'MKC', 'MLM', 'MMC', 'MMM', 'MNST', 'MO', 'MOS', 'MPC', 'MRK', 'MRO', 'MS', 'MSFT', 'MSI', 'MTB', 'MTD', 'MU', 'MYL', 'NAVI', 'NBL', 'NDAQ', 'NEE', 'NEM', 'NFLX', 'NFX', 'NI', 'NKE', 'NLSN', 'NOC', 'NRG', 'NSC', 'NTAP', 'NTRS', 'NUE', 'NVDA', 'NWL', 'NWS', 'NWSA', 'O', 'OKE', 'OMC', 'ORCL', 'ORLY', 'OXY', 'PAYX', 'PBCT', 'PCAR', 'PCG', 'PCLN', 'PDCO', 'PEG', 'PEP', 'PFE', 'PFG', 'PG', 'PGR', 'PH', 'PHM', 'PKG', 'PKI', 'PLD', 'PM', 'PNC', 'PNR', 'PNW', 'PPG', 'PPL', 'PRGO', 'PRU', 'PSA', 'PSX', 'PVH', 'PWR', 'PX', 'PXD', 'PYPL', 'Q', 'QCOM', 'QRVO', 'RCL', 'RE', 'REG', 'REGN', 'RF', 'RHI', 'RHT', 'RJF', 'RL', 'RMD', 'ROK', 'ROP', 'ROST', 'RRC', 'RSG', 'RTN', 'SBAC', 'SBUX', 'SCG', 'SCHW', 'SEE', 'SHW', 'SIG', 'SJM', 'SLB', 'SLG', 'SNA', 'SNI', 'SNPS', 'SO', 'SPG', 'SPGI', 'SPLS', 'SRCL', 'SRE', 'STI', 'STT', 'STX', 'STZ', 'SWK', 'SWKS', 'SYF', 'SYK', 'SYMC', 'SYY', 'T', 'TAP', 'TDG', 'TEL', 'TGT', 'TIF', 'TJX', 'TMK', 'TMO', 'TRIP', 'TROW', 'TRV', 'TSCO', 'TSN', 'TSS', 'TWX', 'TXN', 'TXT', 'UA', 'UAA', 'UAL', 'UDR', 'UHS', 'ULTA', 'UNH', 'UNM', 'UNP', 'UPS', 'URI', 'USB', 'UTX', 'V', 'VAR', 'VFC', 'VIAB', 'VLO', 'VMC', 'VNO', 'VRSK', 'VRSN', 'VRTX', 'VTR', 'VZ', 'WAT', 'WBA', 'WDC', 'WEC', 'WFC', 'WHR', 'WLTW', 'WM', 'WMB', 'WMT', 'WRK', 'WU', 'WY', 'WYN', 'WYNN', 'XEC', 'XEL', 'XL', 'XLNX', 'XOM', 'XRAY', 'XRX', 'XYL', 'YUM', 'ZBH', 'ZION', 'ZTS']
+                ,  startdate = '2017-07-01'
+                ,  enddate = '2017-08-05'
+                ,  permutations = 100
                 ,  annualized_or_cumulative = 'cumulative'
-                )
+                )   
     
     print 'AggregatedTotalReturnsDataframe'
     print o.ReturnsClass.AggregatedTotalReturnsDataframe
     print 'AlignedClosePriceHistoryDataframe'
     print o.AlignedClosePriceHistoryDataframe
+
+##               symbols = [
+##                            'GOOGL',
+##                            'FB',
+##                            'MSFT',
+####                            'LRCX',
+####                            'EVR',
+####                            'MASI',
+####                            'CELG',
+####                            'AOS',
+####                            'LPX',
+####                            'MRK',
+####                            'EVR',
+####                            'JNJ',
+####                            'INTC',
+####                            #'GOLD',
+####                            'LMT',
+####                            'RTN',
+####                            'BP',
+####                            'T',
+####                            'HSBC',
+####                            'THO',
+####                            'SPY'
+##                            ]
