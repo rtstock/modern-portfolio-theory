@@ -6,6 +6,13 @@ class addsimulation:
         return self._OutputEfficientFrontierObject
     OutputEfficientFrontierObject = property(get_OutputEfficientFrontierObject, set_OutputEfficientFrontierObject)
     
+    #PathnameToSimulationWorkbook
+    def set_PathnameToSimulationWorkbook(self,PathnameToSimulationWorkbook):
+        self._PathnameToSimulationWorkbook = PathnameToSimulationWorkbook
+    def get_PathnameToSimulationWorkbook(self):
+        return self._PathnameToSimulationWorkbook
+    PathnameToSimulationWorkbook = property(get_PathnameToSimulationWorkbook, set_PathnameToSimulationWorkbook)
+        
     def __init__(self,symbols,startdate,enddate,permutations,annualized_or_cumulative):
         print 'initialized addsimulationtoworkbook'
         import compileworkbook as cwbk
@@ -86,6 +93,7 @@ class addsimulation:
         wks_simulation = wb['simulation']
 
         wb.save(new_path_to_workbook)
+        self.PathnameToSimulationWorkbook = new_path_to_workbook
 ##        try:
 ##            wb.create_sheet('simulation')
 ##            wks_simulation = wb['simulation']
