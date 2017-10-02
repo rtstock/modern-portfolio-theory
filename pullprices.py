@@ -32,7 +32,7 @@ def stockhistory(symbols,fromdate,todate):
     #from datetime import datetime
     #dfromdate = fromdate.strftime('%b%d')
     #datetime(2000,1,1), datetime(2012,1,1)
-    print 'running stockhistory(symbols,fromdate,todate)',symbols,fromdate,todate
+    #print 'running stockhistory(symbols,fromdate,todate)',symbols,fromdate,todate
     try:
         hist = data.DataReader(symbols,  "yahoo", fromdate, todate)
         print hist
@@ -56,14 +56,15 @@ def stockhistoryasdataframe(symbols,fromdate,todate):
     for c in chunks:
         i +=1
         if on == True:
-            print 'pulling prices for chunk',i, c
+            print 'pulling prices for chunk',i, 'total of', len(c), 'symbol'
             h_good,h_missing = stockhistoryasdataframeindividual(c,fromdate,todate)
             #print 'h_good',h_good
             df_good = df_good.append(h_good, ignore_index=True)
             df_missing = df_missing.append(h_missing, ignore_index=True)
         on = True
     print '--- df_good ----'
-    print df_good
+    print 'length of pricespulled',len(df_good)
+    print 'length of pricespulled missing',len(df_missing)
     return df_good,df_missing
 
 

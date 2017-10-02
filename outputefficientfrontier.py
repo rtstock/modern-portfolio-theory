@@ -383,8 +383,8 @@ if __name__=='__main__':
     o = output(
                 symbols_and_signs_list = symbols_and_signs_list
                 
-                ,  startdate = '2017-03-01'
-                ,  enddate = '2017-09-30'
+                ,  startdate = '2015-09-30'
+                ,  enddate = '2016-09-30'
                 ,  permutations = 100
                 ,  annualized_or_cumulative = 'cumulative'
                 ,  longmax = 5

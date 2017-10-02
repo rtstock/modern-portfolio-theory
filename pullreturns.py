@@ -121,7 +121,7 @@ class perform:
         import pullprices as pp1
         df_good,df_missing = pp1.stockhistoryasdataframe(symbols,startdate,enddate)
         list_of_good_symbols = np.unique(df_good[['Ticker']])
-        print 'count_of_good_symbols', len(list_of_good_symbols)
+        print 'count of symbols returned from pullprices', len(list_of_good_symbols)
         print 'list_of_good_symbols', list_of_good_symbols
         if len(df_missing) > 0:
             list_of_missing_symbols =  np.unique(df_missing[['Ticker']])
@@ -132,10 +132,13 @@ class perform:
         df_pivotclose = df_good.pivot(index='Date', columns='Ticker', values='Close')
         #print df_pivotadjclose
         self.HistoryOfAdjClosePricesDataframe = df_pivotadjclose
+        print '--- self.HistoryOfAdjClosePricesDataframe ----'
+        print self.HistoryOfAdjClosePricesDataframe
         self.HistoryOfClosePricesDataframe = df_pivotclose
         #import pullpricesusingpandas as pp
         #self.HistoryOfAdjClosePricesDataframe = pp.stockhistory(symbols,startdate,enddate)
         self.TotalReturnsDataframe = self.dailyreturns('Total')
+        print 'pullreturns length of TotalReturnsDataframe',len(self.TotalReturnsDataframe)
         self.PriceChangeReturnsDataframe = self.dailyreturns('PriceChange')
         
         self.AggregatedTotalReturnsDataframe = self.aggregatedreturns('Total')
@@ -172,7 +175,8 @@ class perform:
             df_00 = self.HistoryOfClosePricesDataframe
         else:
             df_00 = self.HistoryOfAdjClosePricesDataframe
-        
+        print '--- df_00 ---  pullreturns.dailyreturns()'
+        print df_00
         import pandas as pd
         dates1 = pd.date_range('1910-01-01', str(today_date), freq='D')
         
@@ -248,11 +252,13 @@ class perform:
                 dfr = self.PriceChangeReturnsDataframe.copy()
             else:
                 dfr = self.TotalReturnsDataframe.copy()
-            
+            #333333
+            #print '----- dfr ------', 'pullreturns'
             #print dfr
             df_dailyreturns = dfr[(dfr.ticker == s)]
             df_dailyreturns = df_dailyreturns.dropna()
             df_dailyreturns.sort_index(inplace = True)
+            #print '----- df_dailyreturns ------', 'pullreturns'
             #print df_dailyreturns
             # =PRODUCT(F85:F155)^(1/($B85/12))-1
             # [(1.13)*(0.98)*(1.15)*(1.08)]^(12/42)-1

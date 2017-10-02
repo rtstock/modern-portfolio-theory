@@ -45,7 +45,7 @@ def findcorrelatedpairs():
 ##                    #dict1 = {'row':row,'column':column, 'value':df.loc[row][column]}
 ##                    #print dict1
                     
-        if len(mylist) >= 1000:
+        if len(mylist) >= 100:
             b = False
         df[df==maxvalue] = -10000
 ##        print x
