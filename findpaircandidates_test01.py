@@ -68,7 +68,7 @@ for column in df:
     dict1 = {'ticker1':ticker1,'ticker2':column,'crosscount':len(df2)}
     mylist.append(dict1)
 df_final1 = pd.DataFrame(mylist)
-print df_final1.sort_values('crosscount')
+df_final2 = df_final1.sort_values('crosscount')
     #for idx,v in df1.iterrows():
     #    print idx,v['value1'], v['value2'], v['value31'], v['value32'], v['value4']
     #if i >= 3:

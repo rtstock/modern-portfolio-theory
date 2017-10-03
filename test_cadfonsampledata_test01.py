@@ -88,8 +88,8 @@ if __name__ == "__main__":
             print '---------------------'
             print 'Doing',idx,'of',len(df_topcorrel),s1, s2,'correl',c1
         
-            startdate = datetime.datetime(2016, 1, 1)
-            enddate = datetime.datetime(2017, 1, 1)
+            startdate = datetime.datetime(2015, 1, 1)
+            enddate = datetime.datetime(2017, 9, 30)
 
             prices1 = data.DataReader(s1, "yahoo", startdate, enddate)
             prices2 = data.DataReader(s2, "yahoo", startdate, enddate)
