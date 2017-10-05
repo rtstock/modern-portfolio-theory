@@ -7,11 +7,19 @@ class find:
     def get_PairDollarizedDiffsDataframe(self):
         return self._PairDollarizedDiffsDataframe
     PairDollarizedDiffsDataframe = property(get_PairDollarizedDiffsDataframe, set_PairDollarizedDiffsDataframe)
-    
+
+    def set_PairAverageDiffsDataframe(self,PairAverageDiffsDataframe):
+        self._PairAverageDiffsDataframe = PairAverageDiffsDataframe
+    def get_PairAverageDiffsDataframe(self):
+        return self._PairAverageDiffsDataframe
+    PairAverageDiffsDataframe = property(get_PairAverageDiffsDataframe, set_PairAverageDiffsDataframe)
+        
     def __init__(self,
                  closepricesfilepath):
-        
-        self.PairDollarizedDiffsDataframe, columns = self.findpairdollarizeddiffsasdataframe(closepricesfilepath)
+
+        self.PairAverageDiffsDataframe, columns = self.finddictionaryofpairaveragediffs(closepricesfilepath)
+        self.PairDollarizedDiffsDataframe, columns = self.finddictionaryofpairdollarizeddiffs(closepricesfilepath)
+
         #rowbegin = self.PairDollarizedDiffsDataframe.index[self.PairDollarizedDiffsDataframe.iloc[0]]
         #print rowbegin
         #stop 
@@ -35,9 +43,9 @@ class find:
         #print mydict
         import pandas as pd
         import numpy as np
-        df_pairdollarizeddiff = self.PairDollarizedDiffsDataframe
+        dict_pairdollarizeddiff = self.PairDollarizedDiffsDataframe
         ticker1 = ticker
-        df = df_pairdollarizeddiff[ticker1]
+        df = dict_pairdollarizeddiff[ticker1]
         i = 0
         mylist = []
         for column in df:
@@ -103,10 +111,10 @@ class find:
             #if i >= 3:
             #    stop       
 
-        #df = self.findpairdollarizeddiffsasdataframe()
+        #df = self.finddictionaryofpairdollarizeddiffs()
         #return df_final2
         
-    def findpairdollarizeddiffsasdataframe(self,closepricesfilepath):
+    def finddictionaryofpairdollarizeddiffs(self,closepricesfilepath):
         
         print 'started def findpairstdev'
         import pandas as pd
@@ -124,16 +132,59 @@ class find:
 
         df_dollarized = df.multiply(df_shares3, axis=1)
         
-        df_pairdollarizeddiff = {}
+        dict_pairdollarizeddiff = {}
         
         print 'started analysis...'
 
         for column in columns:
             df_diff = df_dollarized[columns].sub(df_dollarized[column], axis=0)
-            df_pairdollarizeddiff[column] = df_diff
+            dict_pairdollarizeddiff[column] = df_diff
         print 'finished.'
-        return df_pairdollarizeddiff,columns
+        return dict_pairdollarizeddiff,columns
 
+    def finddictionaryofpairaveragediffs(self,closepricesfilepath):
+        
+        print 'started def findpairstdev'
+        import pandas as pd
+        myfile = closepricesfilepath #'C:\Batches\GitStuff\$work\closeprices_sample.csv'
+        df = pd.read_csv(myfile)
+        #print df
+        
+        df2 = df["Date"]
+        df.set_index("Date", drop=True, inplace=True)
+        columns = list(df.columns.values)
+        
+        df_shares1 = 10000.0 / df.iloc[[0]]
+        #print df_shares1
+        #stop
+        df_shares2 = df_shares1.append([df_shares1]*(len(df)-1),ignore_index=True)
+        df_shares3 = pd.concat([df2, df_shares2], axis=1)
+        df_shares3.set_index("Date", drop=True, inplace=True)
+
+        df_dollarized = df.multiply(df_shares3, axis=1)
+        
+        dict_pairdollarizeddiff = {}
+        dict_pairaveragediff = {}
+        #df['MA'] = df.rolling(window=5).mean()
+        print 'started analysis...'
+
+        for column in columns:
+            df_diff = df[columns].sub(df[column], axis=0)
+            for column1 in columns:
+                if not column == column1:
+                    print column,column1
+                    df_diffma = df_diff[column1].to_frame(column + ' ' + column1)
+                    #print df_diffma
+                    
+                    df_diffma['MA ' + column + ' ' + column1] = df_diffma.rolling(window=10).mean()
+                    print df_diffma
+                    stop
+            print df_diff
+            dict_pairdollarizeddiff[column] = df_diff
+            #print df_diff
+            stop 
+        print 'finished.'
+        return dict_pairdollarizeddiff,columns
     
 if __name__=='__main__':
     o = find('C:\\Batches\\GitStuff\\$work\\closeprices_sample.csv')
