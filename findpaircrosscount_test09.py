@@ -67,12 +67,15 @@ class find:
     PairMovingStdevDiffDictionary = property(get_PairMovingStdevDiffDictionary, set_PairMovingStdevDiffDictionary)
     
     def __init__(self,
-                 closepricesfilepath
+                 ticker1
+                 , ticker2
+                 , closepricesfilepath
                  , movingaveragewindow
-                 , opportunitesback = 1):
+                 , opportunitesback = 1
+                 , maxgain = 1000):
 
-        ticker1 = 'CA'
-        ticker2 = 'CHD'
+        #ticker1 = 'GOOG'
+        #ticker2 = 'PCLN'
         
         b = self.setclassdictionaries(closepricesfilepath = closepricesfilepath,movingaveragewindow = movingaveragewindow,list_of_tickers=[ticker1,ticker2])
         df_extreme = self.PairRunningPctDiffDictionary[ticker1][ticker2].loc[self.PairRunningPctDiffDictionary[ticker1][ticker2].isin([0.0,1.0])].to_frame()
@@ -81,7 +84,7 @@ class find:
         my_tradedate = df_extreme.iloc[len(df_extreme)-opportunitesback].name
         my_triggervalue  = df_extreme[ticker2].iloc[len(df_extreme)-opportunitesback]
         print 'latest opportunity', my_tradedate, my_triggervalue
-        self.testone(ticker1,ticker2,my_tradedate,my_triggervalue)
+        self.testone(ticker1,ticker2,my_tradedate,my_triggervalue,maxgain)
 
 ##        for idx ,row in self.PairRunningPctDiffDictionary['AAPL'].iterrows():
 ##            print idx, row['ABBV'], self.PairPricesDiffDictionary['AAPL']['ABBV'][idx]
@@ -481,6 +484,7 @@ class find:
             
             print 'setclassdictionaries',column
             df_diff = df[columns].sub(df[column], axis=0)
+            print df_diff
             i3 = 0
             for column1 in columns:
                 df_diff1 = df_diff[column1].to_frame(column1)
@@ -521,6 +525,9 @@ class find:
         return True
     
 if __name__=='__main__':
-    o = find(closepricesfilepath = 'C:\\Batches\\GitStuff\\$work\\closeprices_sample.csv', movingaveragewindow = 50,opportunitesback=4)
+    ticker1 = 'GOOG'
+    ticker2 = 'PCLN'
+
+    o = find(ticker1 = ticker1, ticker2 = ticker2,closepricesfilepath = 'C:\\Batches\\GitStuff\\$work\\closeprices_sample.csv', movingaveragewindow = 50,opportunitesback=14,maxgain = 700)
 
 
