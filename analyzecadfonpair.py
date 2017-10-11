@@ -67,10 +67,11 @@ class analyze:
         results = res.fit()
         #print 'got here 3'
         beta_hr = results.params
-        #print 'got here 4'
+        print 'beta_hr'
+        print beta_hr
         # Calculate the residuals of the linear combination
         df["res"] = df[s2] - beta_hr*df[s1]
-
+        print df
         if showplot == True:
                 # Plot the residuals
             self.plot_residuals(df,startdatetime,enddatetime)
@@ -86,7 +87,7 @@ class analyze:
         five_percent_value = cadf[4]['5%']
         print ''
         print test_null_hypothesis, 'must be less than',five_percent_value
-        mylist = [s1,s2,c1,test_null_hypothesis]
+        mylist = [s1,s2,test_null_hypothesis]
         with open(myfileanalyze, 'a') as myfile:
             wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
             wr.writerow(mylist)
@@ -153,5 +154,6 @@ class analyze:
 
 if __name__=='__main__':
     #pairlist = ['AAP','AAPL']
-    pairlist = ['CA',     'CHD']
+    #pairlist = ['CA',     'CHD']
+    pairlist = ['PCLN','GOOG']
     o = analyze(pairlist,'2015-01-01','2017-09-30',True)
