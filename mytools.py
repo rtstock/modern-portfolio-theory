@@ -101,7 +101,7 @@ class mystrings:
         print(final)
         print('======== =======================================')
         return final
-    def ConvertDatetime14():
+    def ConvertDatetime14(self):
         import datetime
         s = str(datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
         return s
