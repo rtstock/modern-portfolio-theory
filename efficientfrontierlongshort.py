@@ -431,7 +431,7 @@ class perform:
 
 if __name__=='__main__':
 
-    symbols_and_signs_list = [
+     symbols_and_signs_list = [
 ['AAL','S'],
 ['ADM','S'],
 ['AES','L'],

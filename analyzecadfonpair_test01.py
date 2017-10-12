@@ -58,23 +58,39 @@ class analyze:
         
         Y=df[s2].tolist()
         X=df[s1].tolist()
+
+        #print Y[:5]
+        #stop
+        
         #print 'got here 1'
         # Calculate optimal hedge ratio "beta"
         #print Y
         #print X
-        res = sm.OLS(Y,X)
-        #print 'got here 2'
-        results = res.fit()
+
         #print 'got here 3'
-        beta_hr = results.params
-        print 'beta_hr'
-        print beta_hr
+        #beta_hr = results
+        #print 'beta_hr'
+        #print beta_hr
         # Calculate the residuals of the linear combination
-        df["res"] = df[s2] - beta_hr*df[s1]
-        print df
-        if showplot == True:
-                # Plot the residuals
-            self.plot_residuals(df,startdatetime,enddatetime)
+        
+        i0 = 0
+        beta_hr_list = []
+        
+        for idx, rows in df.iterrows():            
+            #print idx
+            if i0 >= 0:
+                res = sm.OLS(Y[:i0+1],X[:i0+1])
+                beta_hr = res.fit().params[0]                
+                mydict = {'Date':idx,'beta_hr':beta_hr,'actual':Y[i0]/X[i0]}
+                beta_hr_list.append(mydict)
+            i0 += 1
+            #if i0 >= 10:
+            #    stop
+        df_beta_hr = pd.DataFrame(beta_hr_list)
+        df_beta_hr.set_index("Date", drop=True, inplace=True)
+        df_b =  pd.concat([df_a, df_beta_hr], axis=1)
+        print df_b
+        stop
                 
         # Calculate and analyze the CADF test on the residuals
         #print 'got here 5'
@@ -155,5 +171,5 @@ class analyze:
 if __name__=='__main__':
     #pairlist = ['AAP','AAPL']
     #pairlist = ['CA',     'CHD']
-    pairlist = ['PCLN','MSFT']
-    o = analyze(pairlist,'2015-09-30','2017-09-30',True)
+    pairlist = ['MSFT','PCLN']
+    o = analyze(pairlist,'2015-09-30','2017-09-30',False)

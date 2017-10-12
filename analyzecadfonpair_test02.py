@@ -22,8 +22,8 @@ class analyze:
 
     
     def __init__(self,
-                 pairlist,startdate, enddate, showplot = True):
-        df = self.analyzepair(pairlist, startdate, enddate, showplot)
+                ):
+        print 'initialized analyzecadfonpair'
         
     def analyzepair(self,pairlist,startdate,enddate,showplot
                     ):
@@ -58,47 +58,63 @@ class analyze:
         
         Y=df[s2].tolist()
         X=df[s1].tolist()
+
+        #print Y[:5]
+        #stop
+        
         #print 'got here 1'
         # Calculate optimal hedge ratio "beta"
         #print Y
         #print X
-        res = sm.OLS(Y,X)
-        #print 'got here 2'
-        results = res.fit()
+
         #print 'got here 3'
-        beta_hr = results.params
-        print 'beta_hr'
-        print beta_hr
+        #beta_hr = results
+        #print 'beta_hr'
+        #print beta_hr
         # Calculate the residuals of the linear combination
-        df["res"] = df[s2] - beta_hr*df[s1]
-        print df
-        if showplot == True:
-                # Plot the residuals
-            self.plot_residuals(df,startdatetime,enddatetime)
-                
+        
+        i0 = 0
+        beta_hr_list = []
+        
+        for idx, rows in df.iterrows():            
+            #print idx
+            if i0 >= 0:
+                res = sm.OLS(Y[:i0+1],X[:i0+1])
+                beta_hr = res.fit().params[0]
+                mydict = {'Date':idx,'beta_hr':beta_hr,'actual':Y[i0]/X[i0]}
+                beta_hr_list.append(mydict)
+            i0 += 1
+            #if i0 >= 10:
+            #    stop
+        df_beta_hr = pd.DataFrame(beta_hr_list)
+        df_beta_hr.set_index("Date", drop=True, inplace=True)
+        df_b =  pd.concat([df_a, df_beta_hr], axis=1)
+        
+        df_b['a-b'] = df_b['actual']- df_b['beta_hr']
+        df_b["res"] = df_b[s2] - df_b['beta_hr']*df_b[s1]
+
+##        for idx, row in df_b.iterrows():
+##            print idx,row['beta_hr'],round(row['a-b'],4)                
+
         # Calculate and analyze the CADF test on the residuals
-        #print 'got here 5'
-        #print df["res"]
-        cadf = ts.adfuller(df["res"])
-        #print 'got here 6'
-        #pprint.pprint(cadf)
-        #print 'cadf[0]', cadf[0]
+        cadf = ts.adfuller(df_b["res"])
         test_null_hypothesis = cadf[0]
         five_percent_value = cadf[4]['5%']
         print ''
-        print test_null_hypothesis, 'must be less than',five_percent_value
-        mylist = [s1,s2,test_null_hypothesis]
-        with open(myfileanalyze, 'a') as myfile:
-            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-            wr.writerow(mylist)
-
-        if float(test_null_hypothesis) < float(five_percent_value):
-
-            dict_a = {'s1':s1,'s2':s2,'correlation':c1,'test_null_hypothesis':test_null_hypothesis}
-            list_of_dicts_result.append(dict_a)
-            print '   **** Yes, we can reject null hypothesis'
-        else:
-            print '   No accept null hypothesis'
+        print 'cadf test for cointegration result 5% value:',test_null_hypothesis, 'must be less than',five_percent_value
+        return df_b
+##        mylist = [s1,s2,test_null_hypothesis]
+##        with open(myfileanalyze, 'a') as myfile:
+##            wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+##            wr.writerow(mylist)
+##
+##        if float(test_null_hypothesis) < float(five_percent_value):
+##
+##            dict_a = {'s1':s1,'s2':s2,'correlation':c1,'test_null_hypothesis':test_null_hypothesis}
+##            list_of_dicts_result.append(dict_a)
+##            print '   **** Yes, we can reject null hypothesis'
+##        else:
+##            print '   No accept null hypothesis'
 
         
         #print 'cadf[1]',cadf[1]
@@ -154,6 +170,9 @@ class analyze:
 
 if __name__=='__main__':
     #pairlist = ['AAP','AAPL']
-    #pairlist = ['CA',     'CHD']
-    pairlist = ['PCLN','MSFT']
-    o = analyze(pairlist,'2015-09-30','2017-09-30',True)
+    pairlist = ['PEP',     'KO']
+    #pairlist = ['MSFT','PCLN']
+    o = analyze()
+    #pairlist,startdate, enddate, showplot = True
+    df = o.analyzepair(pairlist = pairlist,startdate='2015-09-30', enddate='2017-10-11',showplot=False)
+    print df
