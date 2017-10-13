@@ -142,6 +142,7 @@ class find:
             columns = list_of_tickers
         df = df[columns]
         
+        
         self.ClosePricesDataframe = df
         self.SymbolsList = columns
         print 'self.SymbolsList = columns', self.SymbolsList
@@ -169,7 +170,19 @@ class find:
 
         return True
 
-    
+    def dollarizedataframe(self,mydataframe,parvalue = 10000.0):
+        df = mydataframe
+        list_of_dates = list(df.index)
+        list_of_dates_sorted = sorted(list_of_dates)
+        df2 = pd.DataFrame({'Date':list_of_dates_sorted})
+        df_openshares = parvalue / df.iloc[[0]]
+        df_shares2 = df_openshares.append([df_openshares]*(len(df)-1),ignore_index=True)
+        df_shares3 = pd.concat([df2, df_shares2], axis=1)
+        df_shares3.set_index("Date", drop=True, inplace=True)
+        df_dollarized = df.multiply(df_shares3, axis=1)
+        return df_dollarized 
+
+
 if __name__=='__main__':
 
     symbols_and_signs_list = [
@@ -300,10 +313,12 @@ if __name__=='__main__':
         list_of_tickers.append(x1[0])
     print list_of_tickers
     
-    list_of_tickers = [ 'AAL','AAPL','PCLN','MSFT','AMZN','BAC','PEP','CSCO','KO' ]
+    #list_of_tickers = [ 'AAPL','PCLN','MSFT','GOOG']
+    #list_of_tickers = [ 'LUV','AAL','DAL','UAL']
+    list_of_tickers = [ 'MS','BAC','C','JPM']
     #list_of_tickers = [ 'PCLN','MSFT']
     
-    o = find(list_of_tickers=list_of_tickers,closepricesfilepath = '', fromdate='2016-07-01',todate='2017-12-31')
+    o = find(list_of_tickers=list_of_tickers,closepricesfilepath = '', fromdate='2014-01-01',todate='2017-12-31')
     #o = find(list_of_tickers=list_of_tickers,closepricesfilepath = 'C:\\Batches\\GitStuff\\$work\\closeprices_sample.csv')    
     #b = o.setadvancedclassvariables()
 ##    print '----------------'
@@ -312,13 +327,66 @@ if __name__=='__main__':
 ##    print '---------------------------------------------'
 ##    print 'AAPL PairPricesHedgeRatioDictionary'
 ##    print o.PairPricesHedgeRatioDictionary['AAPL']
+    
+    df_analyze1 = pd.DataFrame(index=o.ClosePricesDataframe.index.copy())
     for s1 in list_of_tickers:
         print '---'
-        print s1
-        print o.PairPricesHedgeRatioDictionary[s1].round(3)
+        #print s1
+        #df = o.PairPricesDiffDictionary[s1]
+        df = o.PairPricesHedgeRatioDictionary[s1]
+        #print s1,df.round(3)
+        df_dollarized = o.dollarizedataframe(df,10000.0)
+        df_dollarized['sum'] = df_dollarized.sum(axis=1)
+        df_analyze1[s1] = df_dollarized['sum']
+        #print s1, df_dollarized.round(0)
+        #stop
+        #for idx, row in df.iterrows():
+    print df_analyze1
+    list_of_signs = [
+                     ('a',[ 1, 1,-1,-1])
+                    ,('b',[-1, 1, 1,-1])
+                    ,('c',[-1,-1, 1, 1])
+                    ,('d',[ 1,-1,-1, 1])
+                    ,('e',[-1, 1,-1, 1])
+                    ,('f',[ 1,-1, 1,-1])
+                     ]
+    df_analyze2 = pd.DataFrame(index=df_analyze1.index.copy())
+    for a in list_of_signs:
+        listid = a[0]
+        listx = a[1]
+        print list_of_tickers
+        print listx
+        #stop
+        #df_a = pd.DataFrame(np.array(listx), columns = list_of_tickers)
+        df_a = pd.DataFrame([listx],columns = list_of_tickers,index=df_analyze1.index.copy())
+        #print df_a
+        #stop
+        #print 'got here 1'
+        df_b = pd.DataFrame(df_analyze1.values*df_a.values, columns=df_analyze1.columns, index=df_analyze1.index)
+        #print 'got here 2'
+        df_b['sum'] = df_b.sum(axis=1)
+        #print 'got here 3'
+        df_analyze2[a[0]] = df_b['sum']
+        #print 'got here 4'
+        #print a, df_b
+    print df_analyze2
+    df_analyze2max = df_analyze2.cummax()
+    print df_analyze2max
+    df_analyze2min = df_analyze2.cummin()
+    print df_analyze2min
+    i0 = 0
+    
+    for a in list_of_signs:
+        label = a[0] + ': ' + str(a[1][0]) + list_of_tickers[0] +', ' + str(a[1][1])+ list_of_tickers[1] +', ' + str(a[1][2])+ list_of_tickers[2] +', ' + str(a[1][3])+ list_of_tickers[3] 
+        listid = a[0]
+        plt.plot(df_analyze2.index, df_analyze2[listid], label=label)
+        i0+=1
+    plt.legend()
+    plt.show()
+    #df_analyze2.plot()
+    #plt.show()
+    #df_status = o.testone(ticker1='AMZN',ticker2='PCLN',tradedate='2017-09-28',triggervalue=0, maxgain=500.0)
+    #print df_status
     #stop
-    df_status = o.testone(ticker1='AMZN',ticker2='PCLN',tradedate='2017-09-28',triggervalue=0, maxgain=500.0)
-    print df_status
-    stop
     
 
