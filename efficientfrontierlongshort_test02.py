@@ -103,11 +103,11 @@ class perform:
         return self._AlignedClosePriceHistoryDataframe
     AlignedClosePriceHistoryDataframe = property(get_AlignedClosePriceHistoryDataframe, set_AlignedClosePriceHistoryDataframe)
 
-    def set_ForceRandomWeightsToSumToOne(self,ForceRandomWeightsToSumToOne):
-        self._ForceRandomWeightsToSumToOne = ForceRandomWeightsToSumToOne
-    def get_ForceRandomWeightsToSumToOne(self):
-        return self._ForceRandomWeightsToSumToOne
-    ForceRandomWeightsToSumToOne = property(get_ForceRandomWeightsToSumToOne, set_ForceRandomWeightsToSumToOne)
+    def set_RequireRandomWeightsToSumToOne(self,RequireRandomWeightsToSumToOne):
+        self._RequireRandomWeightsToSumToOne = RequireRandomWeightsToSumToOne
+    def get_RequireRandomWeightsToSumToOne(self):
+        return self._RequireRandomWeightsToSumToOne
+    RequireRandomWeightsToSumToOne = property(get_RequireRandomWeightsToSumToOne, set_RequireRandomWeightsToSumToOne)
     
 
 ##    def set_BottomConstraint(self,BottomConstraint):
@@ -163,7 +163,7 @@ class perform:
                      ,  longmin = 1
                      ,  shortmax = -0.5
                      ,  shortmin = -2
-                     ,  forcerandomweightstosumtoone = 0
+                     ,  requirerandomweightstosumtoone = 0
                      ,  showresults = 0
                  ):
         
@@ -181,7 +181,7 @@ class perform:
         print symbols
         print('Initialized class efficientfrontierlongshort')
 
-        self.ForceRandomWeightsToSumToOne = forcerandomweightstosumtoone
+        self.RequireRandomWeightsToSumToOne = requirerandomweightstosumtoone
             
         self.SymbolsList = symbols
         print 'Doing efficient frontier for',len(self.SymbolsList), 'symbols'
@@ -397,7 +397,7 @@ class perform:
         if oftype == 'equal':
             rws = self.equalweightseries()
         else:
-            if self.ForceRandomWeightsToSumToOne == 0:
+            if self.RequireRandomWeightsToSumToOne == 0:
                 rws = self.randomweightseriesunconstrained()
             else:
                 rws = self.randomweightseries()
