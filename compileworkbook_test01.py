@@ -13,8 +13,10 @@ class compileclass:
         return self._PathnameToCompiledWorkbook
     PathnameToCompiledWorkbook = property(get_PathnameToCompiledWorkbook, set_PathnameToCompiledWorkbook)
 
-    
-    def __init__(self,symbols_and_signs_dataframe,startdate,enddate,permutations,annualized_or_cumulative):
+    def __init__(self,):
+        print 'compileworkbook initialized'
+        
+    def execute(self,symbols_and_signs_dataframe,startdate,enddate,permutations,annualized_or_cumulative):
         import config
         import mytools
         import datetime
@@ -106,9 +108,31 @@ class compileclass:
                     ws['Z'+str(cell.row)].value = df.loc[cell.value]['bottomconstraint']
                     ws['W'+str(cell.row)].value = 1.0/float(len(df))
                     
+        lastrow = cell.row
+        ws['AC'+str(lastrow + 1)].value = 'Historical Return'
+        ws['AC'+str(lastrow + 2)].value = 'Stddev'
+        ws['AC'+str(lastrow + 3)].value = 'Return/Risk (Historical)' 
+        ws['AC'+str(lastrow + 4)].value = 'Forecast Return'
+        ws['AC'+str(lastrow + 5)].value = 'Annualized Stdev'
+        ws['AC'+str(lastrow + 6)].value = 'Return/Risk (Forecast)'
+        
+        ws_from = wb["permutations"]
+        i0 = 0
+        for col in ws_from.columns:
+            i0 += 1
+            #print 'col',col.column
+            for idx, cell in enumerate(col, 1):
+                ws.cell(row=i0, column=idx+30).value = cell.value #1-indexing
+        #PortfolioReturn = MMULT(TRANSPOSE(totalreturn),weights)
+        ws['V'+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')'
+        #ws.formula_attributes['V'+str(lastrow+1)] = {'t': 'array', 'ref': 'MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')'}
+        #ws.formula_attributes['V'+str(lastrow+1)] = {'t': 'array', 'ref': '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')'}
+        #from openpyxl.formula import Tokenizer
+        #tok = Tokenizer("""=IF($A$1,"then True",MAX(DEFAULT_VAL,'Sheet 2'!B1))""")
+        #tok.parse()
         wb.save(compiledfilepath)
         wb.close()
-        print 'you can find your compileclass file here (PathnameToCompiledWorkbook): ',compiledfilepath
+        print 'you can find your improved file here (PathnameToCompiledWorkbook): ',compiledfilepath
 
 if __name__=='__main__':
     lst0 = []
@@ -122,13 +146,16 @@ if __name__=='__main__':
     df_symbols_and_signs = df_symbols_and_signs.set_index('ticker',drop=True)
     print df_symbols_and_signs
     #stop
-
-    o = compileclass(
-                symbols_and_signs_dataframe = df_symbols_and_signs
-                ,  startdate = '2017-02-28'
-                ,  enddate = '2017-09-30'
-                ,  permutations = 500
-                ,  annualized_or_cumulative = 'cumulative'
-              )
+    o = compileclass()
+##    o.execute(
+##                symbols_and_signs_dataframe = df_symbols_and_signs
+##                ,  startdate = '2017-02-28'
+##                ,  enddate = '2017-09-30'
+##                ,  permutations = 500
+##                ,  annualized_or_cumulative = 'cumulative'
+##              )
+##  
+##    o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=o.PathnameToCompiledWorkbook)
+    testpathname = 'C:\\Batches\\GitStuff\\modern-portfolio-theory\\cache\\20171023080411 compiled test.xlsx'
     
-    o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=o.PathnameToCompiledWorkbook)
+    o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=testpathname)
