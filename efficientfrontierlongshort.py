@@ -163,7 +163,7 @@ class perform:
                      ,  longmin = 1
                      ,  shortmax = -0.5
                      ,  shortmin = -2
-                     ,  forcerandomweightstosumtoone = 0
+                     ,  forcerandomweightstosumtoone = 1
                      ,  showresults = 0
                  ):
         
@@ -344,7 +344,7 @@ class perform:
 
     def randomweightseries(self, 
                      ):
-        int_list = constrained_sum_sample_pos(len(self.SymbolsList),200) 
+        int_list = constrained_sum_sample_pos(len(self.SymbolsList),100) 
         
         fractions_list = [float(x)/float(100) for x in int_list]
         

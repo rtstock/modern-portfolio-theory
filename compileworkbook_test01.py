@@ -14,7 +14,9 @@ class compileclass:
     PathnameToCompiledWorkbook = property(get_PathnameToCompiledWorkbook, set_PathnameToCompiledWorkbook)
 
     def __init__(self,):
-        print 'compileworkbook initialized'
+        print('compileworkbook initialized')
+              
+                    
         
     def execute(self,symbols_and_signs_dataframe,startdate,enddate,permutations,annualized_or_cumulative):
         import config
@@ -110,11 +112,11 @@ class compileclass:
                     
         lastrow = cell.row
         ws['AC'+str(lastrow + 1)].value = 'Historical Return'
-        ws['AC'+str(lastrow + 2)].value = 'Stddev'
-        ws['AC'+str(lastrow + 3)].value = 'Return/Risk (Historical)' 
-        ws['AC'+str(lastrow + 4)].value = 'Forecast Return'
-        ws['AC'+str(lastrow + 5)].value = 'Annualized Stdev'
-        ws['AC'+str(lastrow + 6)].value = 'Return/Risk (Forecast)'
+        ws['AC'+str(lastrow + 2)].value = 'Forecast Return'
+        ws['AC'+str(lastrow + 3)].value = 'Stddev'
+        ws['AC'+str(lastrow + 4)].value = 'Return/Risk (Historical)' 
+        ws['AC'+str(lastrow + 5)].value = 'Return/Risk (Forecast)' 
+        ws['AC'+str(lastrow + 6)].value = 'Annualized Stdev'
         
         ws_from = wb["permutations"]
         i0 = 0
@@ -124,15 +126,81 @@ class compileclass:
             for idx, cell in enumerate(col, 1):
                 ws.cell(row=i0, column=idx+30).value = cell.value #1-indexing
         #PortfolioReturn = MMULT(TRANSPOSE(totalreturn),weights)
-        ws['V'+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')'
-        #ws.formula_attributes['V'+str(lastrow+1)] = {'t': 'array', 'ref': 'MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')'}
-        #ws.formula_attributes['V'+str(lastrow+1)] = {'t': 'array', 'ref': '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')'}
+        
+        #Stdev =SQRT(MMULT(MMULT(TRANSPOSE(weights),covariancematrix,weights))
+        cov_lastrow = len(wb["covariance"]['A'])       
+        cov_lastcol = len(wb["covariance"][1])
+        import xlsxwriter 
+        cov_lastcolletter = xlsxwriter.utility.xl_col_to_name(cov_lastcol-1)
+        #cell = xlsxwriter.utility.xl_rowcol_to_cell(1, 2)  # C2
+        #print cell
+        #stop
+
+##        #Given
+##        ws['V'+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),V2:V'+str(lastrow)+')' #return
+##        ws['V'+str(lastrow+2)].value = '=MMULT(TRANSPOSE(U2:U'+str(lastrow)+'),V2:V'+str(lastrow)+')' #return
+##        ws['V'+str(lastrow+3)].value = '=SQRT(MMULT(MMULT(TRANSPOSE('+'V2:V'+str(lastrow)+'),'+'covariance!B2:'+cov_lastcolletter+str(cov_lastrow)+'),'+'V2:V'+str(lastrow)+'))' #stdev
+##        ws['V'+str(lastrow+4)].value = '=V'+str(lastrow+1)+'/V'+str(lastrow+3) #r/r historical
+##        ws['V'+str(lastrow+5)].value = '=V'+str(lastrow+2)+'/V'+str(lastrow+3) #r/r forecast
+##        ws['V'+str(lastrow+6)].value = '=V'+str(lastrow+3)+'*SQRT(250)'
+        
+        
+        
         #from openpyxl.formula import Tokenizer
-        #tok = Tokenizer("""=IF($A$1,"then True",MAX(DEFAULT_VAL,'Sheet 2'!B1))""")
+        #tok = Tokenizer("=MMULT(TRANSPOSE(F2:F"+str(lastrow)+"),"+weightscol+"2:"+weightscol+str(lastrow)+")")
+        wb.save(compiledfilepath) 
         #tok.parse()
+
+        #Given
+        weightscol = 'V'
+        ws[weightscol+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+        ws[weightscol+str(lastrow+2)].value = '=MMULT(TRANSPOSE(U2:U'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+        ws[weightscol+str(lastrow+3)].value = '=SQRT(MMULT(MMULT(TRANSPOSE('+weightscol+'2:'+weightscol+str(lastrow)+'),'+'covariance!B2:'+cov_lastcolletter+str(cov_lastrow)+'),'+weightscol+'2'+':'+weightscol+str(lastrow)+'))' #stdev
+        ws[weightscol+str(lastrow+4)].value = '='+weightscol+str(lastrow+1)+'/'+weightscol+str(lastrow+3) #r/r historical
+        ws[weightscol+str(lastrow+5)].value = '='+weightscol+str(lastrow+2)+'/'+weightscol+str(lastrow+3) #r/r forecast
+        ws[weightscol+str(lastrow+6)].value = '='+weightscol+str(lastrow+3)+'*SQRT(250)'
+        wb.save(compiledfilepath) 
+        #Equal
+        weightscol = 'W'
+        #ws.cell(column=23, row=lastrow+1, value='=_xlfn.MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')'.format(2))
+        ws[weightscol+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+        ws[weightscol+str(lastrow+2)].value = '=MMULT(TRANSPOSE(U2:U'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+        ws[weightscol+str(lastrow+3)].value = '=SQRT(MMULT(MMULT(TRANSPOSE('+weightscol+'2:'+weightscol+str(lastrow)+'),'+'covariance!B2:'+cov_lastcolletter+str(cov_lastrow)+'),'+weightscol+'2'+':'+weightscol+str(lastrow)+'))' #stdev
+        ws[weightscol+str(lastrow+4)].value = '='+weightscol+str(lastrow+1)+'/'+weightscol+str(lastrow+3) #r/r historical
+        ws[weightscol+str(lastrow+5)].value = '='+weightscol+str(lastrow+2)+'/'+weightscol+str(lastrow+3) #r/r forecast
+        ws[weightscol+str(lastrow+6)].value = '='+weightscol+str(lastrow+3)+'*SQRT(250)'
+
+        #Optimizable
+        weightscol = 'X'
+        ws[weightscol+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+        ws[weightscol+str(lastrow+2)].value = '=MMULT(TRANSPOSE(U2:U'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+        ws[weightscol+str(lastrow+3)].value = '=SQRT(MMULT(MMULT(TRANSPOSE('+weightscol+'2:'+weightscol+str(lastrow)+'),'+'covariance!B2:'+cov_lastcolletter+str(cov_lastrow)+'),'+weightscol+'2'+':'+weightscol+str(lastrow)+'))' #stdev
+        ws[weightscol+str(lastrow+4)].value = '='+weightscol+str(lastrow+1)+'/'+weightscol+str(lastrow+3) #r/r historical
+        ws[weightscol+str(lastrow+5)].value = '='+weightscol+str(lastrow+2)+'/'+weightscol+str(lastrow+3) #r/r forecast
+        ws[weightscol+str(lastrow+6)].value = '='+weightscol+str(lastrow+3)+'*SQRT(250)'
+
+
+        weightscol = 'AE'
+        i0 = 0
+        while 1 == 1:
+            #Might want to give this a shot: http://xlsxwriter.readthedocs.io/example_array_formula.html
+            i0 += 1
+            weightscol = ws[weightscol+'1'].offset(column=1).column
+            print 'value',ws[weightscol+'1'].value
+            if ws[weightscol+'1'].value == None:
+                break
+            ws[weightscol+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+            ws[weightscol+str(lastrow+2)].value = '=MMULT(TRANSPOSE(U2:U'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
+            ws[weightscol+str(lastrow+3)].value = '=SQRT(MMULT(MMULT(TRANSPOSE('+weightscol+'2:'+weightscol+str(lastrow)+'),'+'covariance!B2:'+cov_lastcolletter+str(cov_lastrow)+'),'+weightscol+'2'+':'+weightscol+str(lastrow)+'))' #stdev
+            ws[weightscol+str(lastrow+4)].value = '='+weightscol+str(lastrow+1)+'/'+weightscol+str(lastrow+3) #r/r historical
+            ws[weightscol+str(lastrow+5)].value = '='+weightscol+str(lastrow+2)+'/'+weightscol+str(lastrow+3) #r/r forecast
+            ws[weightscol+str(lastrow+6)].value = '='+weightscol+str(lastrow+3)+'*SQRT(250)'
+        print 'loop broken'
+        
         wb.save(compiledfilepath)
         wb.close()
-        print 'you can find your improved file here (PathnameToCompiledWorkbook): ',compiledfilepath
+        print 'you can find your improved file here (PathnameToCompiledWorkbook): '
+        print compiledfilepath
 
 if __name__=='__main__':
     lst0 = []

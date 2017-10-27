@@ -45,6 +45,7 @@ class output:
                      ,  longmin = 1
                      ,  shortmax = -0.5
                      ,  shortmin = -2
+                     
                      ):
                          
         print('Initialized class outputefficientfrontier')

@@ -22,3 +22,4 @@ mywatcherfolder = '\\\\ipc-vsql01\\DATA\\Batches\\prod\\WatchFolder\\incoming'
 mywatchbatchfolder = 'C:\\Batches\\AutomationProjects\\EfficientFrontier\\code_using_yahoofinance_test01\\py'
 
 localdatabaseconnectstring=r'Driver={SQL Server};Server=ipc-vsql01;Database=DataAgg;Trusted_Connection=yes;'
+myoutputfolder = 'C:\\Batches\\rts\\output\\condor\\candidates'
