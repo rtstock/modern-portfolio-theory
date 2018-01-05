@@ -15,34 +15,13 @@ class execute:
 if __name__=='__main__':
 
     o = execute(
-
-      symbols = [                  
-                'dspg',
-                'bud',
-                'px',
-                'unp',
-                'lbrdk',
-                'chtr',
-                'avgo',
-                'stz',
-                'mar',
-                'mgm',
-                'lsxma',
-                'lyb',
-                'goog',
-                'sbac',
-                'fb',
-                'low',
-                'aap',
-                'pcln',
-                'wlk',
-                'crc',
-                'adsk',
-                'cmcsa',
-                'dltr',
-                'mpc'
-          
-                    ]
+     symbols = [
+    ['AAL','S'],
+    ['ADM','S'],
+    ['AES','L'],
+    ['AGN','S'],
+    ['ALKS','S'],
+    ]
                 ,  startdate = '2017-02-28'
                 ,  enddate = '2017-09-30'
                 ,  permutations = 1000
