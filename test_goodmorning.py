@@ -1,0 +1,25 @@
+import sys, os.path
+mango_dir = os.path.abspath('C:\\Batches\\GitStuff\\tools\\good-morning')
+sys.path.append(mango_dir)
+
+
+import good_morning as gm
+import pandas as pd
+import xlwings as xw
+
+#import income statement, balance sheet, and cash flow of AAPL
+fd = gm.FinancialsDownloader()
+fd_frames = fd.download('AAPL')
+
+#Creates a DataFrame for only the balance sheet
+df1 = pd.DataFrame(list(fd_frames.values())[0])
+print df1
+stop
+#connects to workbook I want to modify
+wb = xw.Book  (r'C:/Users/vince/OneDrive/Documents/Python/Project/spreadsheet.xlsm')
+
+#sheet I would like to modify
+sht = wb.sheets[1]
+
+#modifies & overwrites values in my spreadsheet (this is where I get the commerror)
+sht.range('M6').value = df1 

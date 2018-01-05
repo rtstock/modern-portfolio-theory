@@ -103,11 +103,11 @@ class perform:
         return self._AlignedClosePriceHistoryDataframe
     AlignedClosePriceHistoryDataframe = property(get_AlignedClosePriceHistoryDataframe, set_AlignedClosePriceHistoryDataframe)
 
-    def set_ForceRandomWeightsToSumToOne(self,ForceRandomWeightsToSumToOne):
-        self._ForceRandomWeightsToSumToOne = ForceRandomWeightsToSumToOne
-    def get_ForceRandomWeightsToSumToOne(self):
-        return self._ForceRandomWeightsToSumToOne
-    ForceRandomWeightsToSumToOne = property(get_ForceRandomWeightsToSumToOne, set_ForceRandomWeightsToSumToOne)
+    def set_RequireRandomWeightsToSumToOne(self,RequireRandomWeightsToSumToOne):
+        self._RequireRandomWeightsToSumToOne = RequireRandomWeightsToSumToOne
+    def get_RequireRandomWeightsToSumToOne(self):
+        return self._RequireRandomWeightsToSumToOne
+    RequireRandomWeightsToSumToOne = property(get_RequireRandomWeightsToSumToOne, set_RequireRandomWeightsToSumToOne)
     
 
 ##    def set_BottomConstraint(self,BottomConstraint):
@@ -163,7 +163,7 @@ class perform:
                      ,  longmin = 1
                      ,  shortmax = -0.5
                      ,  shortmin = -2
-                     ,  forcerandomweightstosumtoone = 1
+                     ,  requirerandomweightstosumtoone = 0
                      ,  showresults = 0
                  ):
         
@@ -181,7 +181,7 @@ class perform:
         print symbols
         print('Initialized class efficientfrontierlongshort')
 
-        self.ForceRandomWeightsToSumToOne = forcerandomweightstosumtoone
+        self.RequireRandomWeightsToSumToOne = requirerandomweightstosumtoone
             
         self.SymbolsList = symbols
         print 'Doing efficient frontier for',len(self.SymbolsList), 'symbols'
@@ -344,7 +344,7 @@ class perform:
 
     def randomweightseries(self, 
                      ):
-        int_list = constrained_sum_sample_pos(len(self.SymbolsList),100) 
+        int_list = constrained_sum_sample_pos(len(self.SymbolsList),200) 
         
         fractions_list = [float(x)/float(100) for x in int_list]
         
@@ -397,7 +397,7 @@ class perform:
         if oftype == 'equal':
             rws = self.equalweightseries()
         else:
-            if self.ForceRandomWeightsToSumToOne == 0:
+            if self.RequireRandomWeightsToSumToOne == 0:
                 rws = self.randomweightseriesunconstrained()
             else:
                 rws = self.randomweightseries()
@@ -430,9 +430,6 @@ class perform:
         return df
 
 if __name__=='__main__':
-<<<<<<< HEAD
-    o = perform(symbols_and_signs_list = [['MAR','L'], ['MON','L'], ['NOV','L'], ['A','S'], ['AAL','L']],  startdate = '2017-07-01'
-=======
 
     symbols_and_signs_list = [
 ['AAL','S'],
@@ -562,7 +559,6 @@ if __name__=='__main__':
     
     o = perform(    symbols_and_signs_list = [['MAR','L'], ['MON','L'], ['NOV','L'], ['A','S'], ['AAL','L']]
                 ,  startdate = '2017-07-01'
->>>>>>> 6bc102142fb8a4b076e034ad4b7d8b4cf534be01
                 ,  enddate = '2017-08-05'
                 ,  permutations = 100
                 ,  annualized_or_cumulative = 'cumulative'
@@ -604,126 +600,3 @@ if __name__=='__main__':
 ####                            'THO',
 ####                            'SPY'
 ##                            ]
-
-##     symbols_and_signs_list = [
-##    ['AAL','S'],
-##    ['ADM','S'],
-##    ['AES','L'],
-##    ['AGN','S'],
-##    ['ALKS','S'],
-##    ['AMAT','L'],
-##    ['AMD','S'],
-##    ['AMGN','L'],
-##    ['APD','L'],
-##    ['ARNC','S'],
-##    ['AVT','S'],
-##    ['AXP','L'],
-##    ['AXS','S'],
-##    ['BAC','L'],
-##    ['BC','S'],
-##    ['BEN','L'],
-##    ['CA','L'],
-##    ['CAH','S'],
-##    ['CASY','S'],
-##    ['CELG','L'],
-##    ['CL','L'],
-##    ['CMCSA','S'],
-##    ['COLM','S'],
-##    ['CRI','S'],
-##    ['CSCO','L'],
-##    ['CVS','L'],
-##    ['CVX','L'],
-##    ['CXO','S'],
-##    ['DIS','S'],
-##    ['DISH','S'],
-##    ['EGN','S'],
-##    ['ETR','L'],
-##    ['F','S'],
-##    ['FCNCA','S'],
-##    ['FLS','S'],
-##    ['FSLR','S'],
-##    ['FTI','S'],
-##    ['GE','S'],
-##    ['GPC','S'],
-##    ['GPS','L'],
-##    ['GRMN','L'],
-##    ['GWR','S'],
-##    ['GWW','S'],
-##    ['HAIN','S'],
-##    ['HAS','S'],
-##    ['HD','L'],
-##    ['HHC','S'],
-##    ['HOG','S'],
-##    ['HPE','S'],
-##    ['HRL','S'],
-##    ['INTC','L'],
-##    ['JLL','S'],
-##    ['JNJ','L'],
-##    ['JWN','L'],
-##    ['KHC','S'],
-##    ['KMB','L'],
-##    ['KMI','S'],
-##    ['KSS','L'],
-##    ['LAZ','L'],
-##    ['LEG','S'],
-##    ['LLY','L'],
-##    ['LMT','L'],
-##    ['LNG','S'],
-##    ['LOW','L'],
-##    ['LPX','L'],
-##    ['LUK','S'],
-##    ['LVLT','S'],
-##    ['LYB','L'],
-##    ['M','L'],
-##    ['MAS','L'],
-##    ['MD','S'],
-##    ['MDLZ','S'],
-##    ['MDT','S'],
-##    ['MLM','S'],
-##    ['MMM','L'],
-##    ['MO','L'],
-##    ['MS','L'],
-##    ['MUR','S'],
-##    ['NFX','S'],
-##    ['NKE','S'],
-##    ['NUAN','S'],
-##    ['NWL','S'],
-##    ['NWS','S'],
-##    ['OTEX','S'],
-##    ['PAG','S'],
-##    ['PCLN','L'],
-##    ['PDCO','S'],
-##    ['PEP','L'],
-##    ['PM','L'],
-##    ['QCOM','S'],
-##    ['RPM','S'],
-##    ['RTN','L'],
-##    ['S','S'],
-##    ['SEE','S'],
-##    ['SJM','S'],
-##    ['SKX','S'],
-##    ['SLB','S'],
-##    ['SNA','S'],
-##    ['SON','S'],
-##    ['STX','L'],
-##    ['SWKS','L'],
-##    ['T','L'],
-##    ['TAP','S'],
-##    ['TGT','L'],
-##    ['TRIP','S'],
-##    ['TWTR','S'],
-##    ['UAL','S'],
-##    ['UHS','S'],
-##    ['UNP','L'],
-##    ['VIA','S'],
-##    ['VMC','S'],
-##    ['VRSK','S'],
-##    ['VSAT','S'],
-##    ['WAB','S'],
-##    ['WHR','S'],
-##    ['WPX','S'],
-##    ['WTM','S'],
-##    ['XOM','S'],
-##    ['XRAY','S'],
-##    ['Y','S']
-##    ]

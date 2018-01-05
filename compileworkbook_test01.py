@@ -148,7 +148,7 @@ class compileclass:
         
         #from openpyxl.formula import Tokenizer
         #tok = Tokenizer("=MMULT(TRANSPOSE(F2:F"+str(lastrow)+"),"+weightscol+"2:"+weightscol+str(lastrow)+")")
-        
+        wb.save(compiledfilepath) 
         #tok.parse()
 
         #Given
@@ -159,9 +159,10 @@ class compileclass:
         ws[weightscol+str(lastrow+4)].value = '='+weightscol+str(lastrow+1)+'/'+weightscol+str(lastrow+3) #r/r historical
         ws[weightscol+str(lastrow+5)].value = '='+weightscol+str(lastrow+2)+'/'+weightscol+str(lastrow+3) #r/r forecast
         ws[weightscol+str(lastrow+6)].value = '='+weightscol+str(lastrow+3)+'*SQRT(250)'
-        
+        wb.save(compiledfilepath) 
         #Equal
         weightscol = 'W'
+        #ws.cell(column=23, row=lastrow+1, value='=_xlfn.MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')'.format(2))
         ws[weightscol+str(lastrow+1)].value = '=MMULT(TRANSPOSE(F2:F'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
         ws[weightscol+str(lastrow+2)].value = '=MMULT(TRANSPOSE(U2:U'+str(lastrow)+'),'+weightscol+'2:'+weightscol+str(lastrow)+')' #return
         ws[weightscol+str(lastrow+3)].value = '=SQRT(MMULT(MMULT(TRANSPOSE('+weightscol+'2:'+weightscol+str(lastrow)+'),'+'covariance!B2:'+cov_lastcolletter+str(cov_lastrow)+'),'+weightscol+'2'+':'+weightscol+str(lastrow)+'))' #stdev
@@ -202,32 +203,27 @@ class compileclass:
         print compiledfilepath
 
 if __name__=='__main__':
-
-    df_symbols_and_signs = pd.read_csv('C:\\Batches\\GitStuff\\$work\\glse.csv')
+    lst0 = []
+    lst0.append({'ticker':'MRK','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    lst0.append({'ticker':'THO','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    lst0.append({'ticker':'ALGN','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
+    lst0.append({'ticker':'CELG','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
+    lst0.append({'ticker':'MSFT','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    lst0.append({'ticker':'FB','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    df_symbols_and_signs = pd.DataFrame(lst0)
     df_symbols_and_signs = df_symbols_and_signs.set_index('ticker',drop=True)
     print df_symbols_and_signs
     #stop
-##    lst0 = []
-##    lst0.append({'ticker':'MRK','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    lst0.append({'ticker':'THO','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    lst0.append({'ticker':'ALGN','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
-##    lst0.append({'ticker':'CELG','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
-##    lst0.append({'ticker':'MSFT','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    lst0.append({'ticker':'FB','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    df_symbols_and_signs = pd.DataFrame(lst0)
-##    df_symbols_and_signs = df_symbols_and_signs.set_index('ticker',drop=True)
-##    print df_symbols_and_signs
-    #stop
     o = compileclass()
-    o.execute(
-                symbols_and_signs_dataframe = df_symbols_and_signs
-                ,  startdate = '2017-02-28'
-                ,  enddate = '2017-10-24'
-                ,  permutations = 500
-                ,  annualized_or_cumulative = 'cumulative'
-              )
-  
-    o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=o.PathnameToCompiledWorkbook)
+##    o.execute(
+##                symbols_and_signs_dataframe = df_symbols_and_signs
+##                ,  startdate = '2017-02-28'
+##                ,  enddate = '2017-09-30'
+##                ,  permutations = 500
+##                ,  annualized_or_cumulative = 'cumulative'
+##              )
+##  
+##    o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=o.PathnameToCompiledWorkbook)
+    testpathname = 'C:\\Batches\\GitStuff\\modern-portfolio-theory\\cache\\20171023080411 compiled test.xlsx'
     
-    #testpathname = 'C:\\Batches\\GitStuff\\modern-portfolio-theory\\cache\\20171023080411 compiled test.xlsx'
-    #o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=testpathname)
+    o.improveworkbook(symbols_and_signs_dataframe = df_symbols_and_signs,compiledfilepath=testpathname)
