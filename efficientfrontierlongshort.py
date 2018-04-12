@@ -156,7 +156,7 @@ class perform:
     def __init__(self,
                      symbols_and_signs_list = [['AAPL','L'],['MSFT','S']] 
                      ,  startdate = '2017-01-01'
-                     ,  enddate ='' #2014-01-01
+                     ,  enddate = '2017-07-01'
                      ,  permutations = 10
                      ,  annualized_or_cumulative = 'annualized'
                      ,  longmax = 5
@@ -166,7 +166,8 @@ class perform:
                      ,  forcerandomweightstosumtoone = 1
                      ,  showresults = 0
                  ):
-        
+        #print enddate
+        #stop
         def getsymbollist(x):
             return x[0]
 
@@ -186,8 +187,12 @@ class perform:
         self.SymbolsList = symbols
         print 'Doing efficient frontier for',len(self.SymbolsList), 'symbols'
         print 'Doing efficient frontier for',self.SymbolsList
+        print 'Doing efficient frontier for startdate',startdate
+        print 'Doing efficient frontier for enddate',enddate
         self.StartDateString = startdate
         self.EndDateString = enddate
+        print self.EndDateString
+        
         self.AnnualizedOrCumulative = annualized_or_cumulative
         self._compilehistoricaldataframes()
         newsymbolslist = self.ReturnsClass.SymbolsList
@@ -216,6 +221,9 @@ class perform:
         ser_annual = pd.Series()
         
         import pullreturns as pr
+        print '----mysymbolslist',mysymbolslist
+        print '----startdate',self.StartDateString
+        print '----enddate',self.EndDateString
         o = pr.perform(
                         symbols = mysymbolslist
                         , startdate = self.StartDateString
@@ -430,140 +438,138 @@ class perform:
         return df
 
 if __name__=='__main__':
-<<<<<<< HEAD
-    o = perform(symbols_and_signs_list = [['MAR','L'], ['MON','L'], ['NOV','L'], ['A','S'], ['AAL','L']],  startdate = '2017-07-01'
-=======
+    #o = perform(symbols_and_signs_list = [['MAR','L'], ['MON','L'], ['NOV','L'], ['A','S'], ['AAL','L']],  startdate = '2017-07-01')
 
     symbols_and_signs_list = [
-['AAL','S'],
-['ADM','S'],
-['AES','L'],
-['AGN','S'],
-['ALKS','S'],
-['AMAT','L'],
-['AMD','S'],
-['AMGN','L'],
-['APD','L'],
-['ARNC','S'],
-['AVT','S'],
-['AXP','L'],
-['AXS','S'],
-['BAC','L'],
-['BC','S'],
-['BEN','L'],
-['CA','L'],
-['CAH','S'],
-['CASY','S'],
-['CELG','L'],
-['CL','L'],
-['CMCSA','S'],
-['COLM','S'],
-['CRI','S'],
-['CSCO','L'],
-['CVS','L'],
-['CVX','L'],
-['CXO','S'],
-['DIS','S'],
-['DISH','S'],
-['EGN','S'],
-['ETR','L'],
-['F','S'],
-['FCNCA','S'],
-['FLS','S'],
-['FSLR','S'],
-['FTI','S'],
-['GE','S'],
-['GPC','S'],
-['GPS','L'],
-['GRMN','L'],
-['GWR','S'],
-['GWW','S'],
-['HAIN','S'],
-['HAS','S'],
-['HD','L'],
-['HHC','S'],
-['HOG','S'],
-['HPE','S'],
-['HRL','S'],
-['INTC','L'],
-['JLL','S'],
-['JNJ','L'],
-['JWN','L'],
-['KHC','S'],
-['KMB','L'],
-['KMI','S'],
-['KSS','L'],
-['LAZ','L'],
-['LEG','S'],
-['LLY','L'],
-['LMT','L'],
-['LNG','S'],
-['LOW','L'],
-['LPX','L'],
-['LUK','S'],
-['LVLT','S'],
-['LYB','L'],
-['M','L'],
-['MAS','L'],
-['MD','S'],
-['MDLZ','S'],
-['MDT','S'],
-['MLM','S'],
-['MMM','L'],
-['MO','L'],
-['MS','L'],
-['MUR','S'],
-['NFX','S'],
-['NKE','S'],
-['NUAN','S'],
-['NWL','S'],
-['NWS','S'],
-['OTEX','S'],
-['PAG','S'],
-['PCLN','L'],
-['PDCO','S'],
-['PEP','L'],
-['PM','L'],
-['QCOM','S'],
-['RPM','S'],
-['RTN','L'],
-['S','S'],
-['SEE','S'],
-['SJM','S'],
-['SKX','S'],
-['SLB','S'],
-['SNA','S'],
-['SON','S'],
-['STX','L'],
-['SWKS','L'],
-['T','L'],
-['TAP','S'],
-['TGT','L'],
-['TRIP','S'],
-['TWTR','S'],
-['UAL','S'],
-['UHS','S'],
-['UNP','L'],
-['VIA','S'],
-['VMC','S'],
-['VRSK','S'],
-['VSAT','S'],
-['WAB','S'],
-['WHR','S'],
-['WPX','S'],
-['WTM','S'],
-['XOM','S'],
-['XRAY','S'],
-['Y','S']
-]
+    ['AAL','S'],
+    ['ADM','S'],
+    ['AES','L'],
+    ['AGN','S'],
+    ['ALKS','S'],
+    ['AMAT','L'],
+    ['AMD','S'],
+    ['AMGN','L'],
+    ['APD','L'],
+    ['ARNC','S'],
+    ['AVT','S'],
+    ['AXP','L'],
+    ['AXS','S'],
+    ['BAC','L'],
+    ['BC','S'],
+    ['BEN','L'],
+    ['CA','L'],
+    ['CAH','S'],
+    ['CASY','S'],
+    ['CELG','L'],
+    ['CL','L'],
+    ['CMCSA','S'],
+    ['COLM','S'],
+    ['CRI','S'],
+    ['CSCO','L'],
+    ['CVS','L'],
+    ['CVX','L'],
+    ['CXO','S'],
+    ['DIS','S'],
+    ['DISH','S'],
+    ['EGN','S'],
+    ['ETR','L'],
+    ['F','S'],
+    ['FCNCA','S'],
+    ['FLS','S'],
+    ['FSLR','S'],
+    ['FTI','S'],
+    ['GE','S'],
+    ['GPC','S'],
+    ['GPS','L'],
+    ['GRMN','L'],
+    ['GWR','S'],
+    ['GWW','S'],
+    ['HAIN','S'],
+    ['HAS','S'],
+    ['HD','L'],
+    ['HHC','S'],
+    ['HOG','S'],
+    ['HPE','S'],
+    ['HRL','S'],
+    ['INTC','L'],
+    ['JLL','S'],
+    ['JNJ','L'],
+    ['JWN','L'],
+    ['KHC','S'],
+    ['KMB','L'],
+    ['KMI','S'],
+    ['KSS','L'],
+    ['LAZ','L'],
+    ['LEG','S'],
+    ['LLY','L'],
+    ['LMT','L'],
+    ['LNG','S'],
+    ['LOW','L'],
+    ['LPX','L'],
+    ['LUK','S'],
+    ['LVLT','S'],
+    ['LYB','L'],
+    ['M','L'],
+    ['MAS','L'],
+    ['MD','S'],
+    ['MDLZ','S'],
+    ['MDT','S'],
+    ['MLM','S'],
+    ['MMM','L'],
+    ['MO','L'],
+    ['MS','L'],
+    ['MUR','S'],
+    ['NFX','S'],
+    ['NKE','S'],
+    ['NUAN','S'],
+    ['NWL','S'],
+    ['NWS','S'],
+    ['OTEX','S'],
+    ['PAG','S'],
+    ['PCLN','L'],
+    ['PDCO','S'],
+    ['PEP','L'],
+    ['PM','L'],
+    ['QCOM','S'],
+    ['RPM','S'],
+    ['RTN','L'],
+    ['S','S'],
+    ['SEE','S'],
+    ['SJM','S'],
+    ['SKX','S'],
+    ['SLB','S'],
+    ['SNA','S'],
+    ['SON','S'],
+    ['STX','L'],
+    ['SWKS','L'],
+    ['T','L'],
+    ['TAP','S'],
+    ['TGT','L'],
+    ['TRIP','S'],
+    ['TWTR','S'],
+    ['UAL','S'],
+    ['UHS','S'],
+    ['UNP','L'],
+    ['VIA','S'],
+    ['VMC','S'],
+    ['VRSK','S'],
+    ['VSAT','S'],
+    ['WAB','S'],
+    ['WHR','S'],
+    ['WPX','S'],
+    ['WTM','S'],
+    ['XOM','S'],
+    ['XRAY','S'],
+    ['Y','S']
+    ]
 
-
+    startdate = '2017-07-01'
+    enddate = '2017-08-05'
 
     
     o = perform(    symbols_and_signs_list = [['MAR','L'], ['MON','L'], ['NOV','L'], ['A','S'], ['AAL','L']]
-                ,  startdate = '2017-07-01'
->>>>>>> 6bc102142fb8a4b076e034ad4b7d8b4cf534be01
-                ,  enddate = '2017-08-05'
+                ,  startdate = startdate
+                ,  enddate = enddate
                 ,  permutations = 100
                 ,  annualized_or_cumulative = 'cumulative'
                 ,  longmax = 5

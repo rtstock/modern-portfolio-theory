@@ -13,7 +13,8 @@ class compileclass:
         return self._PathnameToCompiledWorkbook
     PathnameToCompiledWorkbook = property(get_PathnameToCompiledWorkbook, set_PathnameToCompiledWorkbook)
 
-    def __init__(self,):
+    def __init__(self,symbols_and_signs_dataframe,startdate,enddate,permutations,annualized_or_cumulative):
+        self.execute(symbols_and_signs_dataframe,startdate,enddate,permutations,annualized_or_cumulative)
         print('compileworkbook initialized')
               
                     
@@ -203,23 +204,23 @@ class compileclass:
 
 if __name__=='__main__':
 
-    df_symbols_and_signs = pd.read_csv('C:\\Batches\\GitStuff\\$work\\glse.csv')
+    #df_symbols_and_signs = pd.read_csv('C:\\Batches\\GitStuff\\$work\\glse.csv')
+    #df_symbols_and_signs = df_symbols_and_signs.set_index('ticker',drop=True)
+    #print df_symbols_and_signs
+    #stop
+    lst0 = []
+    lst0.append({'ticker':'MRK','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    lst0.append({'ticker':'THO','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    lst0.append({'ticker':'ALGN','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
+    lst0.append({'ticker':'CELG','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
+    lst0.append({'ticker':'MSFT','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    lst0.append({'ticker':'FB','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
+    df_symbols_and_signs = pd.DataFrame(lst0)
     df_symbols_and_signs = df_symbols_and_signs.set_index('ticker',drop=True)
     print df_symbols_and_signs
     #stop
-##    lst0 = []
-##    lst0.append({'ticker':'MRK','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    lst0.append({'ticker':'THO','longshort':'L','givenweight':0.2, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    lst0.append({'ticker':'ALGN','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
-##    lst0.append({'ticker':'CELG','longshort':'S','givenweight':0.2, 'forecastreturn':-0.05,'topconstraint':-0.005,'bottomconstraint':-0.02})
-##    lst0.append({'ticker':'MSFT','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    lst0.append({'ticker':'FB','longshort':'L','givenweight':0.1, 'forecastreturn':0.05,'topconstraint':0.05,'bottomconstraint':0.01})
-##    df_symbols_and_signs = pd.DataFrame(lst0)
-##    df_symbols_and_signs = df_symbols_and_signs.set_index('ticker',drop=True)
-##    print df_symbols_and_signs
-    #stop
-    o = compileclass()
-    o.execute(
+    
+    o = compileclass(
                 symbols_and_signs_dataframe = df_symbols_and_signs
                 ,  startdate = '2017-02-28'
                 ,  enddate = '2017-10-24'

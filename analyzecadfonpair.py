@@ -17,6 +17,7 @@ import statsmodels.tsa.stattools as ts
 #from pandas.stats.api import ols
 import statsmodels.api as sm
 import datetime
+import csv
 
 class analyze:
 
@@ -88,7 +89,7 @@ class analyze:
         print ''
         print test_null_hypothesis, 'must be less than',five_percent_value
         mylist = [s1,s2,test_null_hypothesis]
-        with open(myfileanalyze, 'a') as myfile:
+        with open('.\\myfileanalyze.csv', 'a') as myfile:
             wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
             wr.writerow(mylist)
 
@@ -96,9 +97,9 @@ class analyze:
 
             dict_a = {'s1':s1,'s2':s2,'correlation':c1,'test_null_hypothesis':test_null_hypothesis}
             list_of_dicts_result.append(dict_a)
-            print '   **** Yes, we can reject null hypothesis'
+            print '   **** Yes it  is, we can reject null hypothesis :)'
         else:
-            print '   No accept null hypothesis'
+            print '   No it is not, so we accept null hypothesis :('
 
         
         #print 'cadf[1]',cadf[1]

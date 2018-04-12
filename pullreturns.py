@@ -122,6 +122,7 @@ class perform:
         yesterday_date = datetime.date.fromordinal(datetime.date.today().toordinal()-1)
         import pullprices as pp1
         df_good,df_missing = pp1.pull().stockhistoryasdataframe(symbols,startdate,enddate)
+        print df_good
         list_of_good_symbols = np.unique(df_good[['Ticker']])
         print 'count of symbols returned from pullprices', len(list_of_good_symbols)
         print 'list_of_good_symbols', list_of_good_symbols
