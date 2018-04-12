@@ -28,8 +28,8 @@ if __name__=='__main__':
     #stop
 
     o = runclass(symbols = df_symbols_and_signs  
-        ,  startdate = '2017-02-28'
-        ,  enddate = '2017-09-30'
+        ,  startdate = '2018-01-01'
+        ,  enddate = '2018-04-12'
         ,  permutations = 1000
         ,  annualized_or_cumulative = 'cumulative'
               )
